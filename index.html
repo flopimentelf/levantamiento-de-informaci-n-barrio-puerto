@@ -4,682 +4,747 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Levantamiento físico | Taller de Diseño de Servicios 2026</title>
+<title>Tramas de elección | Taller de Diseño de Servicios 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
 
 <style>
 :root {
   --azul: #0875ff;
   --verde: #00c878;
   --amarillo: #ffd000;
-  --rojo: #ff304e;
+  --rojo: #ed382b;
   --negro: #171717;
-  --gris: #777;
-  --linea: rgba(23,23,23,.28);
-  --division: 50%;
+  --linea: rgba(23,23,23,.3);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: white;
+  background: #fff;
   color: var(--negro);
   font-family: Helvetica, Arial, sans-serif;
 }
 
-button, input, select {
-  font: inherit;
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+/* PRIMERA PARTE: LLUVIA DE PENTÁGONOS */
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  overflow: hidden;
+  background: white;
 }
 
-button {
-  cursor: pointer;
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 25px 30px 22px 34px;
+  pointer-events: none;
 }
 
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--azul);
-  outline-offset: 3px;
-}
-
-.pagina {
-  width: 100%;
-  padding: 25px 30px 30px;
-}
-
-header {
+.hero-header {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--linea);
-  padding-bottom: 16px;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
-.header-derecha {
-  text-align: right;
+.hero-meta { text-align: right; }
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-.sobrelinea {
-  margin-top: 38px;
-  font-size: 11px;
-  letter-spacing: .12em;
+.kicker {
+  margin-bottom: 22px;
+  padding: 7px 10px;
+  border: 1px solid var(--azul);
+  color: var(--azul);
+  font-size: 10px;
+  letter-spacing: .09em;
   text-transform: uppercase;
-  color: var(--azul);
 }
 
-h1 {
-  max-width: 1100px;
-  margin: 18px 0 24px;
-  font-size: clamp(42px, 7.5vw, 100px);
-  line-height: .9;
+.hero h1 {
+  margin: 0;
+  font-size: clamp(43px, 7vw, 100px);
   letter-spacing: -.085em;
-  font-weight: 700;
+  line-height: .9;
 }
 
-h1 span {
-  color: var(--azul);
+.hero h1 span { color: var(--azul); }
+
+.hero-description {
+  max-width: 340px;
+  margin-top: 28px;
+  font-size: 13px;
+  line-height: 1.65;
 }
 
-.intro-grid {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 45px;
-  padding: 26px 0 35px;
+.hero-note {
+  margin-top: 24px;
+  color: #555;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.hero-footer {
+  padding-top: 13px;
   border-top: 1px solid var(--linea);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.hero-divider {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: rgba(23,23,23,.45);
+}
+
+#rain {
+  position: absolute;
+  inset: 0 0 0 50%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#rain canvas {
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+/* INFORMACIÓN DEL PROYECTO */
+
+.research {
+  padding: 35px 30px 30px;
+}
+
+.section-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+  padding-bottom: 22px;
   border-bottom: 1px solid var(--linea);
 }
 
-h2 {
+.section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--azul);
+}
+
+.section-top h2 {
+  margin: 10px 0 0;
+  font-size: clamp(30px, 5vw, 58px);
+  letter-spacing: -.065em;
+  line-height: .95;
+}
+
+.section-top p {
+  max-width: 420px;
   font-size: 12px;
+  line-height: 1.65;
+  color: #555;
+}
+
+.research-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  padding: 24px 0 28px;
+}
+
+.research-info h3 {
+  margin: 0 0 12px;
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: .09em;
   text-transform: uppercase;
 }
 
-.pregunta {
-  max-width: 680px;
-  margin: 18px 0;
-  font-size: clamp(24px, 3.4vw, 43px);
-  line-height: 1.07;
-  letter-spacing: -.045em;
+.research-question {
+  margin: 0 0 12px;
+  font-size: clamp(23px, 3vw, 36px);
+  letter-spacing: -.04em;
+  line-height: 1.08;
 }
 
-.bajada {
-  max-width: 570px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: #484848;
-}
-
-.indice {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px 24px;
-  margin-top: 22px;
-}
-
-.variable {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.muestra-color {
-  flex: 0 0 32px;
-  height: 32px;
-  clip-path: polygon(50% 0%, 98% 35%, 80% 94%, 20% 94%, 2% 35%);
-}
-
-.azul { background: rgba(8,117,255,.72); }
-.verde { background: rgba(0,200,120,.72); }
-.amarillo { background: rgba(255,208,0,.78); }
-.rojo { background: rgba(255,48,78,.68); }
-
-.variable strong {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 13px;
-}
-
-.variable p {
+.body-copy {
+  max-width: 620px;
   margin: 0;
-  font-size: 11px;
-  line-height: 1.5;
   color: #555;
-}
-
-.nota-escala {
-  margin-top: 23px;
-  padding-top: 14px;
-  border-top: 1px solid var(--linea);
-  font-size: 11px;
-  line-height: 1.65;
-  color: #555;
-}
-
-.seccion-pizarra {
-  padding-top: 30px;
-}
-
-.titulo-pizarra {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 22px;
-}
-
-.titulo-pizarra h2 {
-  margin: 0 0 8px;
-}
-
-.titulo-pizarra p {
-  margin: 0;
-  max-width: 500px;
   font-size: 12px;
-  line-height: 1.6;
-  color: #555;
+  line-height: 1.7;
 }
 
-.controles {
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px 20px;
+}
+
+.legend-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.legend-dot {
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+  clip-path: polygon(50% 0%, 98% 35%, 80% 94%, 20% 94%, 2% 35%);
+  opacity: .85;
+}
+
+.blue { background: var(--azul); }
+.green { background: var(--verde); }
+.yellow { background: var(--amarillo); }
+.red { background: var(--rojo); }
+
+.legend-item strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.legend-item small {
+  display: block;
+  color: #555;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+/* CONTROLES */
+
+.controls {
   display: grid;
   grid-template-columns: repeat(6, minmax(0,1fr));
-  gap: 12px;
-  padding: 18px;
+  gap: 10px;
+  margin: 6px 0 20px;
+  padding: 15px;
   border: 1px solid var(--linea);
-  margin-bottom: 24px;
 }
 
-.campo {
+.field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
 }
 
-.campo label {
-  font-size: 10px;
-  text-transform: uppercase;
+.field label {
+  font-size: 9px;
   letter-spacing: .06em;
+  text-transform: uppercase;
   color: #555;
 }
 
-.campo select,
-.campo input {
-  width: 100%;
+.field input,
+.field select {
   min-width: 0;
-  min-height: 39px;
-  padding: 8px;
+  width: 100%;
+  min-height: 37px;
+  padding: 7px;
   border: 1px solid var(--linea);
   border-radius: 0;
   background: white;
   color: var(--negro);
-  font-size: 12px;
+  font-size: 11px;
 }
 
-.acciones {
+.actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   grid-column: 1 / -1;
-  padding-top: 6px;
 }
 
-.boton {
-  min-height: 40px;
-  padding: 10px 15px;
+.btn {
+  padding: 10px 13px;
   border: 1px solid var(--negro);
   background: var(--negro);
   color: white;
-  font-size: 11px;
-  transition: .15s ease;
+  font-size: 10px;
 }
 
-.boton:hover {
+.btn:hover {
   background: white;
   color: var(--negro);
 }
 
-.boton-secundario {
+.btn-light {
   background: white;
   color: var(--negro);
 }
 
-.boton-secundario:hover {
-  background: #f2f2f2;
-}
-
-.boton-peligro {
-  border-color: #b32636;
+.btn-danger {
+  background: white;
   color: #b32636;
-  background: white;
+  border-color: #b32636;
 }
 
-.boton-peligro:hover {
-  background: #b32636;
-  color: white;
-}
-
-.resumen {
+.summary {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px 0;
+  gap: 10px;
+  padding: 12px 0;
   border-top: 1px solid var(--linea);
-  font-size: 11px;
-  line-height: 1.5;
+  font-size: 10px;
 }
 
-.resumen strong {
+.summary span:last-child { color: #666; }
+
+/* PIZARRA CONTINUA */
+
+.board-wrap {
+  position: relative;
+  margin-top: 12px;
+  padding: 12px 12px 0;
+  border: 1px solid #777;
+  background: #ededed;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.8);
+}
+
+.board-wrap::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: linear-gradient(
+    135deg,
+    #aaa 0 5%,
+    #f5f5f5 5% 20%,
+    #d0d0d0 20% 25%,
+    #f5f5f5 25% 40%,
+    #aaa 40% 45%,
+    #f5f5f5 45% 60%,
+    #d0d0d0 60% 65%,
+    #f5f5f5 65% 80%,
+    #aaa 80% 85%,
+    #f5f5f5 85%
+  );
+  border: 1px solid #aaa;
+  border-bottom: 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  border: 1px solid #aaa;
+  border-bottom: 0;
+  background: #f4f4f4;
+}
+
+.street {
+  min-width: 0;
+  border-right: 1px solid #222;
+}
+
+.street:last-child { border-right: 0; }
+
+.street-heading {
+  padding: 12px 8px 9px;
+  background: rgba(255,255,255,.6);
+  text-align: center;
+  border-bottom: 1px solid #aaa;
+}
+
+.street-number {
+  display: block;
+  margin-bottom: 4px;
+  color: #777;
+  font-size: 8px;
+  letter-spacing: .1em;
+}
+
+.street-name {
+  font-size: clamp(13px, 1.5vw, 18px);
   font-weight: 700;
 }
 
-.estado {
+.lane {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 345px;
+}
+
+.side {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #ededed;
+}
+
+.side + .side { border-left: 1px solid #aaa; }
+
+.side-label {
+  padding: 8px 2px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255,255,255,.55);
+  border-bottom: 1px solid rgba(0,0,0,.12);
+}
+
+.side-count {
+  padding: 5px 2px;
+  text-align: center;
+  font-size: 9px;
+  color: #666;
+}
+
+/* FICHAS PENTAGONALES, NO CIRCULARES */
+.spheres {
+  flex: 1;
+  min-height: 250px;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-content: flex-start;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  padding: 5px 3px 8px;
+  overflow: hidden;
+}
+
+.sphere {
+  position: relative;
+  flex: 0 0 39px;
+  width: 39px;
+  height: 39px;
+  margin: 0 -3px -3px;
+  clip-path: polygon(
+    50% 0%,
+    98% 35%,
+    80% 94%,
+    20% 94%,
+    2% 35%
+  );
+  opacity: .8;
+  mix-blend-mode: multiply;
+  border: none;
+  transform: rotate(var(--giro, 0deg));
+}
+
+.sphere.blue { background: rgba(8,117,255,.83); }
+.sphere.green { background: rgba(0,145,82,.83); }
+.sphere.yellow { background: rgba(255,208,0,.87); }
+.sphere.red { background: rgba(196,48,26,.82); }
+
+.side.empty .spheres::after {
+  content: "Sin registros";
+  align-self: center;
+  margin: auto;
+  color: #aaa;
+  font-size: 9px;
+}
+
+.street-total {
+  padding: 7px;
+  text-align: center;
+  background: #f7f7f7;
+  border-top: 1px solid #aaa;
+  font-size: 9px;
   color: #555;
 }
 
-/* Cuatro tubos, uno por calle */
-.pizarra {
+.board-bottom {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 22px;
+  padding: 18px 12px 16px;
+  background: #d9d9d9;
+  border: 1px solid #aaa;
+  border-top: 0;
+}
+
+.board-legend {
   display: grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 13px;
-  align-items: stretch;
+  gap: 8px;
 }
 
-.tubo {
+.legend-tile {
   min-width: 0;
-  border: 1px solid var(--linea);
-  background: #fff;
+  text-align: center;
 }
 
-.tubo-cabecera {
-  min-height: 69px;
-  padding: 13px 10px 11px;
-  border-bottom: 1px solid var(--linea);
+.legend-circles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  min-height: 53px;
+  padding: 4px;
+  background: #999;
+  border: 1px solid #777;
 }
 
-.tubo-numero {
-  display: block;
-  margin-bottom: 7px;
+/* Las miniaturas de la leyenda también son pentágonos */
+.legend-circles .sphere {
+  flex: 0 0 23px;
+  width: 23px;
+  height: 23px;
+  margin: -1px;
+}
+
+.legend-tile p {
+  margin: 7px 0 0;
   font-size: 9px;
-  letter-spacing: .1em;
-  color: var(--gris);
+  line-height: 1.35;
 }
 
-.tubo-nombre {
-  font-size: clamp(14px, 1.6vw, 20px);
-  font-weight: 700;
+.board-question { align-self: center; }
+
+.board-question h3 {
+  margin: 0 0 10px;
+  font-size: clamp(17px, 2vw, 26px);
   letter-spacing: -.04em;
 }
 
-.tubo-conteo {
-  margin-top: 6px;
-  font-size: 10px;
-  color: #555;
-}
-
-/* Cada tubo se divide en positivo y negativo */
-.tubo-cuerpo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-.mitad {
-  position: relative;
-  height: 360px;
-  min-width: 0;
-  overflow: hidden;
-  background-image: linear-gradient(
-    to top,
-    rgba(0,0,0,.018),
-    transparent 60%
-  );
-}
-
-.mitad + .mitad {
-  border-left: 1px solid var(--linea);
-}
-
-.mitad-titulo {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  right: 0;
-  text-align: center;
+.board-question ol {
+  margin: 0;
+  padding-left: 17px;
   font-size: 9px;
-  letter-spacing: .035em;
-  text-transform: uppercase;
-  color: #555;
-  z-index: 2;
+  line-height: 1.7;
 }
 
-.mitad-conteo {
-  position: absolute;
-  top: 25px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 10px;
-  color: #777;
-  z-index: 2;
-}
-
-.fichas {
-  position: absolute;
-  inset: 48px 2px 8px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 22px;
-  align-content: end;
-  justify-items: center;
-  overflow: hidden;
-}
-
-.ficha {
-  width: min(23px, 90%);
-  height: 23px;
-  clip-path: polygon(50% 0%, 98% 35%, 80% 94%, 20% 94%, 2% 35%);
-  opacity: .83;
-  mix-blend-mode: multiply;
-  margin-bottom: -3px;
-  transform: rotate(var(--giro, 0deg));
-  filter: saturate(1.25);
-}
-
-.ficha.azul { background: var(--azul); }
-.ficha.verde { background: var(--verde); }
-.ficha.amarillo { background: var(--amarillo); }
-.ficha.rojo { background: var(--rojo); }
-
-.tubo-leyenda {
-  padding: 11px 9px;
-  border-top: 1px solid var(--linea);
-  font-size: 10px;
-  line-height: 1.5;
-  color: #555;
-}
-
-.vacio {
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  bottom: 50%;
-  text-align: center;
-  font-size: 9px;
-  line-height: 1.5;
-  color: #aaa;
-}
-
-.pie-pizarra {
+.board-foot {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 13px;
-  font-size: 10px;
+  padding: 10px 0 0;
   color: #555;
+  font-size: 9px;
 }
 
-.nota-buenos-aires {
+.buenos-aires {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  margin-top: 42px;
-  padding: 23px 0;
+  gap: 24px;
+  margin-top: 35px;
+  padding: 20px 0;
   border-top: 1px solid var(--linea);
   border-bottom: 1px solid var(--linea);
 }
 
-.nota-buenos-aires h2 {
-  margin-top: 0;
+.buenos-aires h3 {
+  margin: 0 0 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
 }
 
-.nota-buenos-aires p {
-  max-width: 520px;
+.buenos-aires p {
+  max-width: 550px;
+  color: #555;
   font-size: 12px;
   line-height: 1.7;
-  color: #555;
-}
-
-.estado-lugar {
-  display: inline-block;
-  padding: 6px 8px;
-  border: 1px solid var(--linea);
-  font-size: 10px;
-  color: #555;
 }
 
 footer {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  margin-top: 25px;
-  padding-top: 14px;
-  border-top: 1px solid var(--linea);
-  font-size: 10px;
-  line-height: 1.6;
+  gap: 15px;
+  padding: 14px 0 0;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: .045em;
+  letter-spacing: .04em;
 }
 
-@media (max-width: 950px) {
-  .intro-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .controles {
-    grid-template-columns: repeat(3, minmax(0,1fr));
-  }
-
-  .pizarra {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-  }
-
-  .tubo-nombre {
-    font-size: 18px;
-  }
+@media (max-width: 800px) {
+  .hero-copy { padding: 20px 15px 17px 18px; }
+  .hero-header { flex-direction: column; font-size: 9px; }
+  .hero-meta { text-align: left; }
+  .hero h1 { font-size: clamp(37px, 8vw, 60px); }
+  .hero-description { font-size: 11px; }
+  .research { padding: 28px 16px; }
+  .research-info { grid-template-columns: 1fr; }
+  .controls { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .lane { min-height: 270px; }
+  .spheres { min-height: 190px; }
+  .sphere { flex-basis: 29px; width: 29px; height: 29px; }
+  .board-bottom { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 540px) {
-  .pagina {
-    padding: 18px 15px 22px;
-  }
-
-  header {
-    font-size: 10px;
-  }
-
-  .sobrelinea {
-    margin-top: 28px;
-    font-size: 9px;
-  }
-
-  h1 {
-    font-size: clamp(44px, 12vw, 66px);
-  }
-
-  .indice {
-    grid-template-columns: 1fr;
-    gap: 17px;
-  }
-
-  .controles {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    padding: 12px;
-    gap: 12px 9px;
-  }
-
-  .titulo-pizarra {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .pizarra {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 9px;
-  }
-
-  .tubo-cabecera {
-    padding: 10px 7px;
-  }
-
-  .tubo-nombre {
-    font-size: 15px;
-  }
-
-  .mitad {
-    height: 285px;
-  }
-
-  .fichas {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-  }
-
-  .ficha {
-    width: 21px;
-    height: 21px;
-  }
-
-  .nota-buenos-aires {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  footer {
-    flex-direction: column;
-    gap: 5px;
-  }
+@media (max-width: 520px) {
+  .hero { min-height: 90vh; }
+  .hero-copy { padding: 15px 10px 14px 14px; }
+  .hero-header { font-size: 8px; gap: 8px; }
+  .hero h1 { font-size: clamp(32px, 8vw, 44px); }
+  .kicker { font-size: 8px; padding: 5px; }
+  .hero-description { font-size: 10px; margin-top: 17px; }
+  .hero-note { font-size: 9px; }
+  .hero-footer { font-size: 7px; }
+  .section-top { display: block; }
+  .section-top p { margin-top: 15px; }
+  .controls { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 10px; }
+  .board-wrap { padding: 8px 5px 0; }
+  .street-heading { padding: 9px 2px; }
+  .street-name { font-size: 12px; }
+  .lane { min-height: 210px; }
+  .spheres { min-height: 150px; padding: 4px 0; }
+  .sphere { flex-basis: 21px; width: 21px; height: 21px; margin: 0 -2px -2px; }
+  .side-label, .side-count { font-size: 8px; }
+  .board-bottom { padding: 12px 5px; gap: 15px; }
+  .board-legend { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .legend-tile p { font-size: 8px; }
+  .buenos-aires { grid-template-columns: 1fr; }
+  footer { flex-direction: column; }
 }
 </style>
 </head>
 
 <body>
-<div class="pagina">
 
-<header>
-  <div>
-    Taller de Diseño de Servicios 2026<br>
-    Escuela de Arquitectura y Diseño · PUCV
-  </div>
-  <div class="header-derecha">
-    Proyecto de levantamiento<br>
-    de información física
-  </div>
-</header>
+<section class="hero">
+  <div id="rain"></div>
+  <div class="hero-divider"></div>
 
-<div class="sobrelinea">Investigación · Registro de terreno · 001</div>
-
-<h1>Tramas de<br><span>elección.</span></h1>
-
-<section class="intro-grid">
-  <div>
-    <h2>01 / Pregunta de investigación</h2>
-
-    <p class="pregunta">
-      Desde Plaza Sotomayor, para llegar a Plaza Echaurren,
-      ¿qué camino elegirías y por qué?
-    </p>
-
-    <p class="bajada">
-      Este espacio registra los resultados de las encuestas realizadas
-      en terreno. Cada ficha representa una respuesta asociada a una
-      calle, una valoración y una variable de percepción urbana.
-      La acumulación permite visualizar coincidencias y diferencias
-      entre los recorridos elegidos.
-    </p>
-
-    <div class="nota-escala">
-      <strong>Cómo leer la pizarra.</strong>
-      Cada columna representa una calle. Cada columna está dividida
-      en dos lados: positivo, a la izquierda, y negativo, a la derecha.
-      Los colores distinguen las variables observadas. La cantidad de
-      fichas corresponde al número de respuestas registradas para cada
-      combinación de calle, variable y valoración.
-    </div>
-  </div>
-
-  <div>
-    <h2>02 / Índice de variables</h2>
-
-    <div class="indice">
-      <div class="variable">
-        <div class="muestra-color azul"></div>
-        <div>
-          <strong>Seguridad percibida</strong>
-          <p>Qué tan seguro o resguardado se siente el recorrido.</p>
-        </div>
+  <div class="hero-copy">
+    <header class="hero-header">
+      <div>
+        Taller de Diseño de Servicios 2026<br>
+        Escuela de Arquitectura y Diseño · PUCV
       </div>
-
-      <div class="variable">
-        <div class="muestra-color verde"></div>
-        <div>
-          <strong>Transitabilidad</strong>
-          <p>Qué tan fácil, cómodo y expedito resulta desplazarse.</p>
-        </div>
+      <div class="hero-meta">
+        Proyecto de levantamiento<br>
+        de información física
       </div>
+    </header>
 
-      <div class="variable">
-        <div class="muestra-color amarillo"></div>
-        <div>
-          <strong>Luminosidad percibida</strong>
-          <p>La percepción de luz y visibilidad en el recorrido.</p>
-        </div>
-      </div>
-
-      <div class="variable">
-        <div class="muestra-color rojo"></div>
-        <div>
-          <strong>Vitalidad urbana percibida</strong>
-          <p>La actividad, presencia de personas y dinamismo que se percibe en la calle.</p>
-        </div>
-      </div>
+    <div class="hero-content">
+      <div class="kicker">Observación · Registro de terreno</div>
+      <h1>Tramas de<br><span>elección.</span></h1>
+      <p class="hero-description">
+        Observar es atender a las relaciones, los recorridos y las
+        decisiones que construyen nuestra experiencia de los lugares.
+      </p>
+      <p class="hero-note">
+        Una lluvia de formas, encuentros y acumulaciones.
+      </p>
     </div>
 
-    <div class="nota-escala">
-      Los colores representan las variables, no una valoración positiva
-      o negativa por sí mismos. La valoración se lee según el lado del
-      tubo donde se encuentra cada ficha.
+    <div class="hero-footer">
+      Levantamiento físico · Valparaíso / Buenos Aires · 2026
     </div>
   </div>
 </section>
 
-<section class="seccion-pizarra">
-  <div class="titulo-pizarra">
+<section class="research">
+  <div class="section-top">
     <div>
-      <h2>03 / Pizarra de levantamiento</h2>
-      <p>
-        Registra los resultados del día y observa cómo se transforman
-        las cuatro calles a medida que se incorporan nuevas respuestas.
-      </p>
+      <div class="section-label">01 / Pregunta de investigación</div>
+      <h2>Un recorrido,<br>cuatro posibilidades.</h2>
     </div>
-    <div class="estado-lugar" id="etiquetaLugar">Valparaíso · Registro activo</div>
+    <p>
+      Proyecto de levantamiento de información física. Aquí se registran
+      las respuestas de las encuestas para visualizar cómo se perciben
+      distintas calles en el recorrido entre Plaza Sotomayor y Plaza Echaurren.
+    </p>
   </div>
 
-  <section class="controles" aria-label="Controles de registro">
-    <div class="campo">
-      <label for="fecha">Fecha del registro</label>
+  <div class="research-info">
+    <div>
+      <h3>La pregunta</h3>
+      <p class="research-question">
+        Desde Plaza Sotomayor, para llegar a Plaza Echaurren,
+        ¿qué camino elegirías y por qué?
+      </p>
+      <p class="body-copy">
+        Cada ficha representa una respuesta recogida en terreno. La calle
+        seleccionada se relaciona con una variable de percepción y una
+        valoración positiva o negativa. La acumulación permite comparar
+        las elecciones y hacer visibles las tendencias del levantamiento.
+      </p>
+    </div>
+
+    <div>
+      <h3>02 / Índice de variables</h3>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-dot blue"></span>
+          <div>
+            <strong>Seguridad percibida</strong>
+            <small>Resguardo y sensación de seguridad en el recorrido.</small>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-dot yellow"></span>
+          <div>
+            <strong>Luminosidad percibida</strong>
+            <small>Luz y visibilidad que se percibe en la calle.</small>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-dot red"></span>
+          <div>
+            <strong>Facilidad para caminar</strong>
+            <small>Comodidad y facilidad para desplazarse a pie.</small>
+          </div>
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-dot green"></span>
+          <div>
+            <strong>Vitalidad urbana percibida</strong>
+            <small>Actividad, presencia de personas y dinamismo del espacio.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase">
+    03 / Registro de respuestas
+  </h3>
+
+  <section class="controls">
+    <div class="field">
+      <label for="fecha">Fecha</label>
       <input type="date" id="fecha">
     </div>
 
-    <div class="campo">
-      <label for="lugar">Lugar</label>
+    <div class="field">
+      <label for="lugar">Ubicación</label>
       <select id="lugar">
         <option value="valparaiso">Valparaíso · Barrio Puerto</option>
         <option value="buenosaires">Buenos Aires · Por definir</option>
       </select>
     </div>
 
-    <div class="campo">
+    <div class="field">
       <label for="calle">Calle</label>
       <select id="calle">
         <option value="Serrano">Serrano</option>
@@ -689,271 +754,467 @@ footer {
       </select>
     </div>
 
-    <div class="campo">
+    <div class="field">
       <label for="valoracion">Valoración</label>
       <select id="valoracion">
-        <option value="positivo">Positiva · Izquierda</option>
-        <option value="negativo">Negativa · Derecha</option>
+        <option value="negativo">Negativa (−)</option>
+        <option value="positivo">Positiva (+)</option>
       </select>
     </div>
 
-    <div class="campo">
+    <div class="field">
       <label for="variable">Variable</label>
       <select id="variable">
-        <option value="azul">Azul · Seguridad</option>
-        <option value="verde">Verde · Transitabilidad</option>
-        <option value="amarillo">Amarillo · Luminosidad</option>
-        <option value="rojo">Rojo · Vitalidad urbana</option>
+        <option value="blue">Azul · Seguridad</option>
+        <option value="yellow">Amarillo · Luminosidad</option>
+        <option value="red">Rojo · Facilidad para caminar</option>
+        <option value="green">Verde · Vitalidad urbana</option>
       </select>
     </div>
 
-    <div class="campo">
+    <div class="field">
       <label for="cantidad">Cantidad de fichas</label>
       <input type="number" id="cantidad" value="1" min="1" max="200">
     </div>
 
-    <div class="acciones">
-      <button class="boton" id="agregar">+ Añadir fichas</button>
-      <button class="boton boton-secundario" id="deshacer">Deshacer último registro</button>
-      <button class="boton boton-secundario" id="exportar">Exportar CSV</button>
-      <button class="boton boton-peligro" id="reiniciar">Reiniciar este día</button>
+    <div class="actions">
+      <button class="btn" id="agregar">+ Añadir fichas</button>
+      <button class="btn btn-light" id="deshacer">Deshacer último registro</button>
+      <button class="btn btn-light" id="exportar">Exportar CSV</button>
+      <button class="btn btn-danger" id="reiniciar">Reiniciar este día</button>
     </div>
   </section>
 
-  <div class="resumen">
-    <div>Fecha: <strong id="fechaResumen">—</strong></div>
-    <div>Ubicación: <strong id="lugarResumen">—</strong></div>
-    <div>Total de fichas: <strong id="totalResumen">0</strong></div>
-    <div class="estado" id="estado">Esperando registros.</div>
+  <div class="summary">
+    <span>Fecha: <strong id="fechaResumen"></strong></span>
+    <span>Lugar: <strong id="lugarResumen"></strong></span>
+    <span>Total de fichas: <strong id="totalResumen">0</strong></span>
+    <span id="estado">Esperando registros.</span>
   </div>
 
-  <div class="pizarra" id="pizarra"></div>
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
 
-  <div class="pie-pizarra">
-    <span>Izquierda: valoración positiva</span>
-    <span>Derecha: valoración negativa</span>
-    <span>Una ficha = una respuesta registrada</span>
+    <div class="board-bottom">
+      <div class="board-legend">
+        <div class="legend-tile">
+          <div class="legend-circles">
+            <span class="sphere blue"></span>
+            <span class="sphere blue"></span>
+            <span class="sphere blue"></span>
+            <span class="sphere blue"></span>
+          </div>
+          <p>Seguridad</p>
+        </div>
+
+        <div class="legend-tile">
+          <div class="legend-circles">
+            <span class="sphere yellow"></span>
+            <span class="sphere yellow"></span>
+            <span class="sphere yellow"></span>
+            <span class="sphere yellow"></span>
+          </div>
+          <p>Luminosidad</p>
+        </div>
+
+        <div class="legend-tile">
+          <div class="legend-circles">
+            <span class="sphere red"></span>
+            <span class="sphere red"></span>
+            <span class="sphere red"></span>
+            <span class="sphere red"></span>
+          </div>
+          <p>Facilidad para caminar</p>
+        </div>
+
+        <div class="legend-tile">
+          <div class="legend-circles">
+            <span class="sphere green"></span>
+            <span class="sphere green"></span>
+            <span class="sphere green"></span>
+            <span class="sphere green"></span>
+          </div>
+          <p>Vitalidad urbana</p>
+        </div>
+      </div>
+
+      <div class="board-question">
+        <h3>¿Qué calle prefieres?</h3>
+        <ol>
+          <li>Elige una calle y piensa cómo percibes sus características.</li>
+          <li>Selecciona la variable que identifiques en ella.</li>
+          <li>Registra la ficha según tu percepción: izquierda (−), derecha (+).</li>
+        </ol>
+      </div>
+    </div>
   </div>
+
+  <div class="board-foot">
+    <span>Izquierda: valoración negativa (−)</span>
+    <span>Derecha: valoración positiva (+)</span>
+    <span>Una ficha representa una respuesta</span>
+  </div>
+
+  <section class="buenos-aires">
+    <div>
+      <h3>04 / Continuidad territorial</h3>
+      <p>
+        Este sistema de registro también se utilizará durante el trabajo
+        de campo en Buenos Aires. Cuando se defina el lugar de observación,
+        se incorporará su identificación para registrar y comparar los
+        resultados de ambos territorios.
+      </p>
+    </div>
+
+    <div>
+      <h3>Próxima etapa</h3>
+      <p>
+        Definir el lugar de levantamiento en Buenos Aires y mantener
+        los mismos criterios de registro para facilitar la comparación
+        entre ambos puertos.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Taller de Diseño de Servicios 2026</span>
+    <span>Escuela de Arquitectura y Diseño · PUCV</span>
+    <span>Levantamiento de información física</span>
+  </footer>
 </section>
-
-<section class="nota-buenos-aires">
-  <div>
-    <h2>04 / Continuidad territorial</h2>
-    <p>
-      Este sistema de registro también se utilizará durante el trabajo
-      de campo en Buenos Aires. Una vez definido el lugar de observación,
-      se incorporará su identificación para registrar y comparar los
-      resultados de ambos territorios.
-    </p>
-  </div>
-  <div>
-    <h2>Próxima etapa</h2>
-    <p>
-      Definir el lugar de levantamiento en Buenos Aires y mantener los
-      mismos criterios de registro para facilitar la lectura comparada
-      entre los dos puertos.
-    </p>
-    <span class="estado-lugar">Buenos Aires · Lugar por definir</span>
-  </div>
-</section>
-
-<footer>
-  <span>Taller de Diseño de Servicios 2026</span>
-  <span>Escuela de Arquitectura y Diseño · PUCV</span>
-  <span>Levantamiento de información física</span>
-</footer>
-
-</div>
 
 <script>
+/* LLUVIA DE PENTÁGONOS EN LA MITAD DERECHA */
+(() => {
+  if (!window.Matter) return;
+
+  const {
+    Engine, Render, Runner, Bodies, Body, Composite, Events
+  } = Matter;
+
+  const contenedor = document.getElementById("rain");
+  const colores = [
+    "rgba(255,25,60,.57)",
+    "rgba(0,100,255,.55)",
+    "rgba(255,195,0,.62)",
+    "rgba(0,210,120,.55)"
+  ];
+
+  let ancho = Math.max(1, window.innerWidth / 2);
+  let alto = window.innerHeight;
+  let piezas = [];
+  let paredes = [];
+  let ultimoLanzamiento = performance.now();
+  let indiceColor = 0;
+
+  const TAMANO = 40;
+  const MAXIMO = 204;
+
+  const motor = Engine.create({ enableSleeping: true });
+  motor.gravity.y = 1;
+  motor.gravity.scale = .001;
+  motor.positionIterations = 10;
+  motor.velocityIterations = 8;
+
+  const render = Render.create({
+    element: contenedor,
+    engine: motor,
+    options: {
+      width: ancho,
+      height: alto,
+      wireframes: false,
+      background: "transparent",
+      pixelRatio: Math.min(window.devicePixelRatio || 1, 2)
+    }
+  });
+
+  const runner = Runner.create({ delta: 1000 / 60 });
+
+  function azar(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function crearParedes() {
+    paredes.forEach(p => Composite.remove(motor.world, p));
+
+    const g = 160;
+    paredes = [
+      Bodies.rectangle(ancho / 2, alto + g / 2, ancho + g * 2, g,
+        { isStatic: true, render: { visible: false } }),
+      Bodies.rectangle(-g / 2, alto / 2, g, alto * 3,
+        { isStatic: true, render: { visible: false } }),
+      Bodies.rectangle(ancho + g / 2, alto / 2, g, alto * 3,
+        { isStatic: true, render: { visible: false } })
+    ];
+
+    Composite.add(motor.world, paredes);
+  }
+
+  function crearPentagono() {
+    if (piezas.length >= MAXIMO) return;
+
+    const radio = 40;
+    const x = azar(radio + 5, Math.max(radio + 5, ancho - radio - 5));
+
+    const p = Bodies.polygon(x, -radio * 2 - azar(0, alto * .2), 5, 31, {
+      restitution: .005,
+      friction: .92,
+      frictionStatic: 1,
+      frictionAir: .018,
+      density: .0018,
+      slop: .01,
+      sleepThreshold: 35,
+      angle: azar(-.5, .5),
+      render: { visible: false }
+    });
+
+    p.colorPentagono = colores[indiceColor % colores.length];
+    indiceColor++;
+
+    Body.setVelocity(p, { x: azar(-.65, .65), y: azar(0, .3) });
+    Body.setAngularVelocity(p, azar(-.012, .012));
+
+    piezas.push(p);
+    Composite.add(motor.world, p);
+  }
+
+  function dibujar(ctx, p) {
+    ctx.save();
+    ctx.translate(p.position.x, p.position.y);
+    ctx.rotate(p.angle);
+    ctx.beginPath();
+
+    for (let i = 0; i < 5; i++) {
+      const a = -Math.PI / 2 + i * Math.PI * 2 / 5;
+      const x = Math.cos(a) * TAMANO;
+      const y = Math.sin(a) * TAMANO;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+
+    ctx.closePath();
+    ctx.fillStyle = p.colorPentagono;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  Events.on(render, "afterRender", () => {
+    const ctx = render.context;
+    ctx.save();
+    ctx.globalCompositeOperation = "multiply";
+    piezas.forEach(p => dibujar(ctx, p));
+    ctx.restore();
+  });
+
+  Events.on(motor, "beforeUpdate", () => {
+    const now = performance.now();
+
+    if (now - ultimoLanzamiento > 135 && piezas.length < MAXIMO) {
+      crearPentagono();
+      ultimoLanzamiento = now;
+    }
+
+    piezas.forEach(p => {
+      if (p.isSleeping) return;
+      if (p.speed < .045 && Math.abs(p.angularVelocity) < .01) {
+        Body.setVelocity(p, { x: 0, y: 0 });
+        Body.setAngularVelocity(p, 0);
+      }
+    });
+  });
+
+  Events.on(motor, "afterUpdate", () => {
+    piezas = piezas.filter(p => {
+      if (p.position.y > alto + TAMANO * 4) {
+        Composite.remove(motor.world, p);
+        return false;
+      }
+      return true;
+    });
+  });
+
+  crearParedes();
+  for (let i = 0; i < 24; i++) crearPentagono();
+
+  window.addEventListener("resize", () => {
+    ancho = Math.max(1, window.innerWidth / 2);
+    alto = window.innerHeight;
+
+    render.canvas.width = ancho * render.options.pixelRatio;
+    render.canvas.height = alto * render.options.pixelRatio;
+    render.canvas.style.width = ancho + "px";
+    render.canvas.style.height = alto + "px";
+    render.options.width = ancho;
+    render.options.height = alto;
+
+    crearParedes();
+
+    piezas.forEach(p => {
+      if (p.position.x > ancho - TAMANO) {
+        Body.setPosition(p, { x: ancho - TAMANO, y: p.position.y });
+      }
+      if (p.position.x < TAMANO) {
+        Body.setPosition(p, { x: TAMANO, y: p.position.y });
+      }
+    });
+  });
+
+  Runner.run(runner, motor);
+  Render.run(render);
+})();
+
+/* PIZARRA DE REGISTROS */
 (() => {
   const CALLES = ["Serrano", "Cochrane", "Blanco", "Errázuriz"];
 
   const VARIABLES = {
-    azul: {
-      nombre: "Seguridad percibida",
-      clase: "azul"
-    },
-    verde: {
-      nombre: "Transitabilidad",
-      clase: "verde"
-    },
-    amarillo: {
-      nombre: "Luminosidad percibida",
-      clase: "amarillo"
-    },
-    rojo: {
-      nombre: "Vitalidad urbana percibida",
-      clase: "rojo"
-    }
+    blue: "Seguridad percibida",
+    yellow: "Luminosidad percibida",
+    red: "Facilidad para caminar",
+    green: "Vitalidad urbana percibida"
   };
 
-  const NOMBRES_LUGAR = {
+  const LUGARES = {
     valparaiso: "Valparaíso · Barrio Puerto",
     buenosaires: "Buenos Aires · Lugar por definir"
   };
 
-  const pizarra = document.getElementById("pizarra");
-  const fechaInput = document.getElementById("fecha");
-  const lugarInput = document.getElementById("lugar");
-  const calleInput = document.getElementById("calle");
-  const valoracionInput = document.getElementById("valoracion");
-  const variableInput = document.getElementById("variable");
-  const cantidadInput = document.getElementById("cantidad");
+  const $ = id => document.getElementById(id);
+
+  const fechaInput = $("fecha");
+  const lugarInput = $("lugar");
+  const calleInput = $("calle");
+  const valoracionInput = $("valoracion");
+  const variableInput = $("variable");
+  const cantidadInput = $("cantidad");
+  const board = $("board");
 
   let registros = [];
   let siguienteId = 1;
 
   function fechaLocal() {
     const ahora = new Date();
-    const desfase = ahora.getTimezoneOffset() * 60000;
-    return new Date(ahora.getTime() - desfase)
-      .toISOString()
-      .slice(0, 10);
+    return new Date(ahora.getTime() - ahora.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 10);
   }
 
   fechaInput.value = fechaLocal();
 
-  function claveActual() {
-    return "tramas-registro-v1-" +
-      lugarInput.value + "-" +
-      fechaInput.value;
+  function clave() {
+    return "tramas-v2-" + lugarInput.value + "-" + fechaInput.value;
   }
 
   function guardar() {
     try {
-      localStorage.setItem(claveActual(), JSON.stringify(registros));
-      document.getElementById("estado").textContent = "Registro guardado en este navegador.";
-    } catch (error) {
-      document.getElementById("estado").textContent =
-        "No se pudo guardar automáticamente en este navegador.";
+      localStorage.setItem(clave(), JSON.stringify(registros));
+      $("estado").textContent = "Guardado en este navegador.";
+    } catch {
+      $("estado").textContent = "No fue posible guardar automáticamente.";
     }
   }
 
   function cargar() {
     try {
-      registros = JSON.parse(localStorage.getItem(claveActual()) || "[]");
+      registros = JSON.parse(localStorage.getItem(clave()) || "[]");
       if (!Array.isArray(registros)) registros = [];
-    } catch (error) {
+    } catch {
       registros = [];
     }
 
-    siguienteId = registros.reduce(
-      (maximo, registro) => Math.max(maximo, registro.id || 0),
-      0
-    ) + 1;
-
+    siguienteId = registros.reduce((max, r) => Math.max(max, r.id || 0), 0) + 1;
     dibujar();
   }
 
-  function crearEstructura() {
-    pizarra.innerHTML = "";
+  function estructura() {
+    board.innerHTML = "";
 
-    CALLES.forEach((calle, indice) => {
-      const tubo = document.createElement("article");
-      tubo.className = "tubo";
-      tubo.dataset.calle = calle;
+    CALLES.forEach((calle, i) => {
+      const street = document.createElement("article");
+      street.className = "street";
+      street.dataset.calle = calle;
 
-      tubo.innerHTML = `
-        <div class="tubo-cabecera">
-          <span class="tubo-numero">CALLE 0${indice + 1}</span>
-          <div class="tubo-nombre">${calle}</div>
-          <div class="tubo-conteo">0 respuestas</div>
+      street.innerHTML = `
+        <div class="street-heading">
+          <span class="street-number">CALLE 0${i + 1}</span>
+          <div class="street-name">${calle}</div>
         </div>
-
-        <div class="tubo-cuerpo">
-          <div class="mitad" data-lado="positivo">
-            <div class="mitad-titulo">Positivo</div>
-            <div class="mitad-conteo">0</div>
-            <div class="fichas"></div>
+        <div class="lane">
+          <div class="side" data-lado="negativo">
+            <div class="side-label">(−)</div>
+            <div class="side-count">0 fichas</div>
+            <div class="spheres"></div>
           </div>
-
-          <div class="mitad" data-lado="negativo">
-            <div class="mitad-titulo">Negativo</div>
-            <div class="mitad-conteo">0</div>
-            <div class="fichas"></div>
+          <div class="side" data-lado="positivo">
+            <div class="side-label">(＋)</div>
+            <div class="side-count">0 fichas</div>
+            <div class="spheres"></div>
           </div>
         </div>
-
-        <div class="tubo-leyenda">
-          Las fichas representan respuestas registradas en esta calle.
-        </div>
+        <div class="street-total">0 respuestas</div>
       `;
 
-      pizarra.appendChild(tubo);
+      board.appendChild(street);
     });
   }
 
   function dibujar() {
-    crearEstructura();
-
-    let total = 0;
+    estructura();
+    let totalGeneral = 0;
 
     CALLES.forEach(calle => {
-      const tubo = [...pizarra.querySelectorAll(".tubo")]
-        .find(elemento => elemento.dataset.calle === calle);
+      const street = [...board.querySelectorAll(".street")]
+        .find(el => el.dataset.calle === calle);
 
-      const registrosCalle = registros.filter(r => r.calle === calle);
-      const conteoTotal = registrosCalle.reduce((suma, r) => suma + r.cantidad, 0);
+      const delCalle = registros.filter(r => r.calle === calle);
+      const totalCalle = delCalle.reduce((s, r) => s + r.cantidad, 0);
 
-      tubo.querySelector(".tubo-conteo").textContent =
-        `${conteoTotal} ${conteoTotal === 1 ? "respuesta" : "respuestas"}`;
+      street.querySelector(".street-total").textContent =
+        `${totalCalle} ${totalCalle === 1 ? "respuesta" : "respuestas"}`;
 
-      total += conteoTotal;
+      totalGeneral += totalCalle;
 
-      ["positivo", "negativo"].forEach(lado => {
-        const mitad = tubo.querySelector(`[data-lado="${lado}"]`);
-        const fichas = mitad.querySelector(".fichas");
+      ["negativo", "positivo"].forEach(lado => {
+        const side = street.querySelector(`[data-lado="${lado}"]`);
+        const zona = side.querySelector(".spheres");
+        const grupo = delCalle.filter(r => r.valoracion === lado);
+        const cantidadLado = grupo.reduce((s, r) => s + r.cantidad, 0);
 
-        const grupo = registrosCalle.filter(r => r.valoracion === lado);
-        const conteoLado = grupo.reduce((suma, r) => suma + r.cantidad, 0);
+        side.querySelector(".side-count").textContent =
+          `${cantidadLado} ${cantidadLado === 1 ? "ficha" : "fichas"}`;
 
-        mitad.querySelector(".mitad-conteo").textContent = conteoLado;
-
-        if (conteoLado === 0) {
-          const vacio = document.createElement("div");
-          vacio.className = "vacio";
-          vacio.textContent = "Sin registros";
-          fichas.appendChild(vacio);
-          return;
-        }
+        if (!cantidadLado) side.classList.add("empty");
 
         /*
-          Se dibuja una ficha por respuesta. Para mantener la
-          pizarra legible, se muestran hasta 90 por lado; el conteo
-          conserva siempre el total exacto.
+          El número junto al lado conserva el total exacto.
+          Limitamos las fichas dibujadas para evitar sobrecargar
+          el navegador si se registran cientos de respuestas.
         */
-        let dibujadas = 0;
-        const maximoVisible = 90;
+        const MAX_VISIBLES = 150;
+        let visibles = 0;
 
-        grupo.forEach(registro => {
-          for (let i = 0; i < registro.cantidad; i++) {
-            if (dibujadas >= maximoVisible) break;
-
+        grupo.forEach(r => {
+          for (let i = 0; i < r.cantidad && visibles < MAX_VISIBLES; i++) {
             const ficha = document.createElement("span");
-            ficha.className = `ficha ${registro.variable}`;
-
-            const giro = ((registro.id * 13 + i * 17) % 17) - 8;
-            ficha.style.setProperty("--giro", `${giro}deg`);
-            ficha.title = `${VARIABLES[registro.variable].nombre} · ${lado}`;
-
-            fichas.appendChild(ficha);
-            dibujadas++;
+            ficha.className = `sphere ${r.variable}`;
+            ficha.style.setProperty(
+              "--giro",
+              `${((r.id * 13 + i * 17) % 17) - 8}deg`
+            );
+            ficha.title =
+              `${VARIABLES[r.variable]} · ${calle} · ${lado}`;
+            zona.appendChild(ficha);
+            visibles++;
           }
         });
       });
     });
 
-    document.getElementById("fechaResumen").textContent = fechaInput.value;
-    document.getElementById("lugarResumen").textContent =
-      NOMBRES_LUGAR[lugarInput.value];
-
-    document.getElementById("totalResumen").textContent = total;
-    document.getElementById("etiquetaLugar").textContent =
-      NOMBRES_LUGAR[lugarInput.value] + " · Registro activo";
+    $("fechaResumen").textContent = fechaInput.value;
+    $("lugarResumen").textContent = LUGARES[lugarInput.value];
+    $("totalResumen").textContent = totalGeneral;
   }
 
-  document.getElementById("agregar").addEventListener("click", () => {
+  $("agregar").addEventListener("click", () => {
     const cantidad = Math.floor(Number(cantidadInput.value));
 
     if (!Number.isFinite(cantidad) || cantidad < 1 || cantidad > 200) {
@@ -963,53 +1224,47 @@ footer {
 
     registros.push({
       id: siguienteId++,
+      fecha: fechaInput.value,
+      lugar: lugarInput.value,
       calle: calleInput.value,
       valoracion: valoracionInput.value,
       variable: variableInput.value,
-      cantidad,
-      fecha: fechaInput.value,
-      lugar: lugarInput.value
+      cantidad
     });
 
     guardar();
     dibujar();
 
-    document.getElementById("estado").textContent =
-      `Se añadieron ${cantidad} ficha${cantidad === 1 ? "" : "s"} a ${calleInput.value}.`;
+    $("estado").textContent =
+      `Añadidas ${cantidad} fichas a ${calleInput.value}.`;
   });
 
-  document.getElementById("deshacer").addEventListener("click", () => {
-    if (registros.length === 0) {
-      document.getElementById("estado").textContent = "No hay registros que deshacer.";
+  $("deshacer").addEventListener("click", () => {
+    if (!registros.length) {
+      $("estado").textContent = "No hay registros que deshacer.";
       return;
     }
 
     registros.pop();
     guardar();
     dibujar();
-
-    document.getElementById("estado").textContent =
-      "Se eliminó el último registro añadido.";
+    $("estado").textContent = "Se eliminó el último registro.";
   });
 
-  document.getElementById("reiniciar").addEventListener("click", () => {
-    if (registros.length === 0) return;
+  $("reiniciar").addEventListener("click", () => {
+    if (!registros.length) return;
 
-    const confirmar = confirm(
-      "¿Quieres eliminar todos los registros de esta fecha y ubicación? Esta acción no se puede deshacer."
-    );
-
-    if (!confirmar) return;
+    if (!confirm("¿Eliminar todos los registros de esta fecha y ubicación?")) {
+      return;
+    }
 
     registros = [];
     guardar();
     dibujar();
-
-    document.getElementById("estado").textContent =
-      "Se reinició la pizarra para esta fecha y ubicación.";
+    $("estado").textContent = "Se reinició la pizarra para esta fecha.";
   });
 
-  document.getElementById("exportar").addEventListener("click", () => {
+  $("exportar").addEventListener("click", () => {
     const filas = [
       ["Fecha", "Lugar", "Calle", "Valoración", "Variable", "Cantidad"]
     ];
@@ -1017,42 +1272,36 @@ footer {
     registros.forEach(r => {
       filas.push([
         r.fecha,
-        NOMBRES_LUGAR[r.lugar],
+        LUGARES[r.lugar],
         r.calle,
         r.valoracion,
-        VARIABLES[r.variable].nombre,
+        VARIABLES[r.variable],
         r.cantidad
       ]);
     });
 
     const csv = filas.map(fila =>
-      fila.map(valor =>
-        '"' + String(valor).replace(/"/g, '""') + '"'
-      ).join(",")
+      fila.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(",")
     ).join("\r\n");
 
-    const archivo = new Blob(["\uFEFF" + csv], {
+    const blob = new Blob(["\uFEFF" + csv], {
       type: "text/csv;charset=utf-8;"
     });
 
-    const url = URL.createObjectURL(archivo);
-    const enlace = document.createElement("a");
-
-    enlace.href = url;
-    enlace.download =
-      `levantamiento-${lugarInput.value}-${fechaInput.value}.csv`;
-
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `levantamiento-${lugarInput.value}-${fechaInput.value}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   });
 
   fechaInput.addEventListener("change", cargar);
   lugarInput.addEventListener("change", cargar);
 
-  crearEstructura();
+  estructura();
   cargar();
 })();
 </script>
