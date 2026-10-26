@@ -409,23 +409,45 @@ init();
 function startRain(){
 const container=document.getElementById("rain");
 if(!container||!window.Matter)return;
-const {Engine,Render,Runner,Bodies,Body,Composite,Events}=Matter;
+if(container.dataset.rainStarted==="true")return;
+const {Engine,Render,Runner,Bodies,Composite,Events}=Matter;
+const colors=["#0875ff","#00c878","#ffd000","#ed382b"];
+function initialize(){
+const width=container.clientWidth;
+const height=container.clientHeight;
+if(width<1||height<1){
+requestAnimationFrame(initialize);
+return;
+}
+container.dataset.rainStarted="true";
 const engine=Engine.create();
 engine.gravity.y=.7;
-const render=Render.create({element:container,engine,options:{width:container.clientWidth,height:container.clientHeight,wireframes:false,background:"transparent",pixelRatio:window.devicePixelRatio||1}});
-const colors=["#0875ff","#00c878","#ffd000","#ed382b"];
-function wallBodies(){
+const pixelRatio=Math.min(window.devicePixelRatio||1,2);
+const render=Render.create({element:container,engine,options:{width,height,wireframes:false,background:"transparent",pixelRatio}});
+const runner=Runner.create();
+let walls=[];
+function updateWalls(){
+if(walls.length)Composite.remove(engine,walls);
 const w=container.clientWidth;
 const h=container.clientHeight;
-return [Bodies.rectangle(w/2,h+25,w,50,{isStatic:true,render:{visible:false}}),Bodies.rectangle(w+25,h/2,50,h,{isStatic:true,render:{visible:false}}),Bodies.rectangle(-25,h/2,50,h,{isStatic:true,render:{visible:false}})];
+walls=[
+Bodies.rectangle(w/2,h+25,w+100,50,{isStatic:true,render:{visible:false}}),
+Bodies.rectangle(w+25,h/2,50,h+100,{isStatic:true,render:{visible:false}}),
+Bodies.rectangle(-25,h/2,50,h+100,{isStatic:true,render:{visible:false}})
+];
+Composite.add(engine,walls);
 }
-Composite.add(engine,wallBodies());
-function addPentagon(){
+function addPentagon(initial=false){
 const w=container.clientWidth;
-const body=Bodies.polygon(Math.random()*w, -35, 5, 13+Math.random()*18,{restitution:.35,friction:.4,density:.001,angle:Math.random()*Math.PI,render:{fillStyle:colors[Math.floor(Math.random()*colors.length)],opacity:.85}});
+const h=container.clientHeight;
+const radius=13+Math.random()*18;
+const x=radius+Math.random()*Math.max(1,w-radius*2);
+const y=initial?Math.random()*h-h:-radius*2;
+const body=Bodies.polygon(x,y,5,radius,{restitution:.35,friction:.4,density:.001,angle:Math.random()*Math.PI,render:{fillStyle:colors[Math.floor(Math.random()*colors.length)],opacity:.85}});
 Composite.add(engine,body);
 }
-for(let i=0;i<24;i++)addPentagon();
+updateWalls();
+for(let i=0;i<24;i++)addPentagon(true);
 Events.on(engine,"afterUpdate",()=>{
 Composite.allBodies(engine).forEach(body=>{
 if(!body.isStatic&&body.position.y>container.clientHeight+70){
@@ -435,18 +457,33 @@ addPentagon();
 });
 });
 Render.run(render);
-const runner=Runner.create();
 Runner.run(runner,engine);
-window.addEventListener("resize",()=>{
+let resizeFrame=0;
+function resizeRain(){
+cancelAnimationFrame(resizeFrame);
+resizeFrame=requestAnimationFrame(()=>{
 const w=container.clientWidth;
 const h=container.clientHeight;
-render.canvas.width=w*(window.devicePixelRatio||1);
-render.canvas.height=h*(window.devicePixelRatio||1);
+if(w<1||h<1)return;
+render.canvas.width=w*pixelRatio;
+render.canvas.height=h*pixelRatio;
+render.canvas.style.width=w+"px";
+render.canvas.style.height=h+"px";
 render.options.width=w;
 render.options.height=h;
 render.bounds.max.x=w;
 render.bounds.max.y=h;
+updateWalls();
 });
+}
+if("ResizeObserver" in window){
+const observer=new ResizeObserver(resizeRain);
+observer.observe(container);
+}else{
+window.addEventListener("resize",resizeRain);
+}
+}
+requestAnimationFrame(initialize);
 }
 startRain();
 </script>
