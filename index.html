@@ -4,581 +4,1056 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tramas de elección</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+<title>Levantamiento físico | Taller de Diseño de Servicios 2026</title>
 
 <style>
+:root {
+  --azul: #0875ff;
+  --verde: #00c878;
+  --amarillo: #ffd000;
+  --rojo: #ff304e;
+  --negro: #171717;
+  --gris: #777;
+  --linea: rgba(23,23,23,.28);
+  --division: 50%;
+}
+
 * {
   box-sizing: border-box;
 }
 
-:root {
-  --division: 50%;
-}
-
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  background: #fff;
-  color: #171717;
-  font-family: Helvetica, Arial, sans-serif;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  overflow: hidden;
+  margin: 0;
+  background: white;
+  color: var(--negro);
+  font-family: Helvetica, Arial, sans-serif;
 }
 
-/* Lluvia confinada a la mitad derecha */
-#lluvia {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: var(--division);
-  z-index: 1;
-  overflow: hidden;
-  pointer-events: none;
+button, input, select {
+  font: inherit;
 }
 
-#lluvia canvas {
-  display: block;
-  mix-blend-mode: multiply;
+button {
+  cursor: pointer;
 }
 
-/* Línea vertical central */
-.linea-central {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: var(--division);
-  width: 1px;
-  background: rgba(23, 23, 23, 0.45);
-  z-index: 4;
-  pointer-events: none;
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--azul);
+  outline-offset: 3px;
 }
 
-/* Composición editorial */
 .pagina {
-  position: relative;
-  z-index: 2;
-  width: 50%;
-  height: 100vh;
-  min-height: 500px;
-  padding: 26px 30px 22px 34px;
-  display: flex;
-  flex-direction: column;
-  pointer-events: none;
-  background: transparent;
+  width: 100%;
+  padding: 25px 30px 30px;
 }
 
 header {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(23, 23, 23, .35);
+  gap: 20px;
+  border-bottom: 1px solid var(--linea);
+  padding-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.header-derecha {
+  text-align: right;
+}
+
+.sobrelinea {
+  margin-top: 38px;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--azul);
+}
+
+h1 {
+  max-width: 1100px;
+  margin: 18px 0 24px;
+  font-size: clamp(42px, 7.5vw, 100px);
+  line-height: .9;
+  letter-spacing: -.085em;
+  font-weight: 700;
+}
+
+h1 span {
+  color: var(--azul);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 45px;
+  padding: 26px 0 35px;
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+}
+
+h2 {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.pregunta {
+  max-width: 680px;
+  margin: 18px 0;
+  font-size: clamp(24px, 3.4vw, 43px);
+  line-height: 1.07;
+  letter-spacing: -.045em;
+}
+
+.bajada {
+  max-width: 570px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #484848;
+}
+
+.indice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 24px;
+  margin-top: 22px;
+}
+
+.variable {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.muestra-color {
+  flex: 0 0 32px;
+  height: 32px;
+  clip-path: polygon(50% 0%, 98% 35%, 80% 94%, 20% 94%, 2% 35%);
+}
+
+.azul { background: rgba(8,117,255,.72); }
+.verde { background: rgba(0,200,120,.72); }
+.amarillo { background: rgba(255,208,0,.78); }
+.rojo { background: rgba(255,48,78,.68); }
+
+.variable strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.variable p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.nota-escala {
+  margin-top: 23px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+  font-size: 11px;
+  line-height: 1.65;
+  color: #555;
+}
+
+.seccion-pizarra {
+  padding-top: 30px;
+}
+
+.titulo-pizarra {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.titulo-pizarra h2 {
+  margin: 0 0 8px;
+}
+
+.titulo-pizarra p {
+  margin: 0;
+  max-width: 500px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.controles {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--linea);
+  margin-bottom: 24px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.campo label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #555;
+}
+
+.campo select,
+.campo input {
+  width: 100%;
+  min-width: 0;
+  min-height: 39px;
+  padding: 8px;
+  border: 1px solid var(--linea);
+  border-radius: 0;
+  background: white;
+  color: var(--negro);
+  font-size: 12px;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  grid-column: 1 / -1;
+  padding-top: 6px;
+}
+
+.boton {
+  min-height: 40px;
+  padding: 10px 15px;
+  border: 1px solid var(--negro);
+  background: var(--negro);
+  color: white;
+  font-size: 11px;
+  transition: .15s ease;
+}
+
+.boton:hover {
+  background: white;
+  color: var(--negro);
+}
+
+.boton-secundario {
+  background: white;
+  color: var(--negro);
+}
+
+.boton-secundario:hover {
+  background: #f2f2f2;
+}
+
+.boton-peligro {
+  border-color: #b32636;
+  color: #b32636;
+  background: white;
+}
+
+.boton-peligro:hover {
+  background: #b32636;
+  color: white;
+}
+
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--linea);
   font-size: 11px;
   line-height: 1.5;
 }
 
-.numero {
-  text-align: right;
-}
-
-main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-
-.contenido {
-  max-width: 590px;
-}
-
-.etiqueta {
-  display: inline-block;
-  margin-bottom: 22px;
-  padding: 7px 10px;
-  border: 1px solid #2364d2;
-  color: #2364d2;
-  border-radius: 2px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .09em;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(44px, 7vw, 94px);
+.resumen strong {
   font-weight: 700;
-  letter-spacing: -.085em;
-  line-height: .91;
 }
 
-h1 span {
-  color: #2364d2;
-}
-
-.descripcion {
-  max-width: 340px;
-  margin-top: 28px;
-  font-size: 13px;
-  line-height: 1.65;
-}
-
-.instruccion {
-  margin-top: 26px;
+.estado {
   color: #555;
-  font-size: 10px;
-  line-height: 1.7;
-  letter-spacing: .035em;
 }
 
-.punto {
+/* Cuatro tubos, uno por calle */
+.pizarra {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 13px;
+  align-items: stretch;
+}
+
+.tubo {
+  min-width: 0;
+  border: 1px solid var(--linea);
+  background: #fff;
+}
+
+.tubo-cabecera {
+  min-height: 69px;
+  padding: 13px 10px 11px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.tubo-numero {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 9px;
+  letter-spacing: .1em;
+  color: var(--gris);
+}
+
+.tubo-nombre {
+  font-size: clamp(14px, 1.6vw, 20px);
+  font-weight: 700;
+  letter-spacing: -.04em;
+}
+
+.tubo-conteo {
+  margin-top: 6px;
+  font-size: 10px;
+  color: #555;
+}
+
+/* Cada tubo se divide en positivo y negativo */
+.tubo-cuerpo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.mitad {
+  position: relative;
+  height: 360px;
+  min-width: 0;
+  overflow: hidden;
+  background-image: linear-gradient(
+    to top,
+    rgba(0,0,0,.018),
+    transparent 60%
+  );
+}
+
+.mitad + .mitad {
+  border-left: 1px solid var(--linea);
+}
+
+.mitad-titulo {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+  color: #555;
+  z-index: 2;
+}
+
+.mitad-conteo {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  color: #777;
+  z-index: 2;
+}
+
+.fichas {
+  position: absolute;
+  inset: 48px 2px 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 22px;
+  align-content: end;
+  justify-items: center;
+  overflow: hidden;
+}
+
+.ficha {
+  width: min(23px, 90%);
+  height: 23px;
+  clip-path: polygon(50% 0%, 98% 35%, 80% 94%, 20% 94%, 2% 35%);
+  opacity: .83;
+  mix-blend-mode: multiply;
+  margin-bottom: -3px;
+  transform: rotate(var(--giro, 0deg));
+  filter: saturate(1.25);
+}
+
+.ficha.azul { background: var(--azul); }
+.ficha.verde { background: var(--verde); }
+.ficha.amarillo { background: var(--amarillo); }
+.ficha.rojo { background: var(--rojo); }
+
+.tubo-leyenda {
+  padding: 11px 9px;
+  border-top: 1px solid var(--linea);
+  font-size: 10px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.vacio {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 50%;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.5;
+  color: #aaa;
+}
+
+.pie-pizarra {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 13px;
+  font-size: 10px;
+  color: #555;
+}
+
+.nota-buenos-aires {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 42px;
+  padding: 23px 0;
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+}
+
+.nota-buenos-aires h2 {
+  margin-top: 0;
+}
+
+.nota-buenos-aires p {
+  max-width: 520px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.estado-lugar {
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 7px;
-  background: #2364d2;
-  border-radius: 50%;
+  padding: 6px 8px;
+  border: 1px solid var(--linea);
+  font-size: 10px;
+  color: #555;
 }
 
 footer {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 8px;
-  padding-top: 13px;
-  border-top: 1px solid rgba(23, 23, 23, .35);
-  font-size: 9px;
+  gap: 20px;
+  margin-top: 25px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+  font-size: 10px;
   line-height: 1.6;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .045em;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 950px) {
+  .intro-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .controles {
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+
+  .pizarra {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  .tubo-nombre {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 540px) {
   .pagina {
-    padding: 20px 14px 16px 18px;
+    padding: 18px 15px 22px;
   }
 
   header {
-    flex-direction: column;
-    gap: 8px;
+    font-size: 10px;
+  }
+
+  .sobrelinea {
+    margin-top: 28px;
     font-size: 9px;
-  }
-
-  .numero {
-    text-align: left;
-  }
-
-  .etiqueta {
-    font-size: 8px;
-    padding: 6px;
   }
 
   h1 {
-    font-size: clamp(36px, 8vw, 58px);
+    font-size: clamp(44px, 12vw, 66px);
   }
 
-  .descripcion {
-    font-size: 12px;
-    margin-top: 20px;
+  .indice {
+    grid-template-columns: 1fr;
+    gap: 17px;
   }
 
-  .instruccion {
-    font-size: 9px;
-    margin-top: 18px;
+  .controles {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    padding: 12px;
+    gap: 12px 9px;
+  }
+
+  .titulo-pizarra {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pizarra {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 9px;
+  }
+
+  .tubo-cabecera {
+    padding: 10px 7px;
+  }
+
+  .tubo-nombre {
+    font-size: 15px;
+  }
+
+  .mitad {
+    height: 285px;
+  }
+
+  .fichas {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  .ficha {
+    width: 21px;
+    height: 21px;
+  }
+
+  .nota-buenos-aires {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   footer {
     flex-direction: column;
-    gap: 3px;
-    font-size: 8px;
+    gap: 5px;
   }
 }
 </style>
 </head>
 
 <body>
-
-<div id="lluvia"></div>
-<div class="linea-central"></div>
-
 <div class="pagina">
-  <header>
+
+<header>
+  <div>
+    Taller de Diseño de Servicios 2026<br>
+    Escuela de Arquitectura y Diseño · PUCV
+  </div>
+  <div class="header-derecha">
+    Proyecto de levantamiento<br>
+    de información física
+  </div>
+</header>
+
+<div class="sobrelinea">Investigación · Registro de terreno · 001</div>
+
+<h1>Tramas de<br><span>elección.</span></h1>
+
+<section class="intro-grid">
+  <div>
+    <h2>01 / Pregunta de investigación</h2>
+
+    <p class="pregunta">
+      Desde Plaza Sotomayor, para llegar a Plaza Echaurren,
+      ¿qué camino elegirías y por qué?
+    </p>
+
+    <p class="bajada">
+      Este espacio registra los resultados de las encuestas realizadas
+      en terreno. Cada ficha representa una respuesta asociada a una
+      calle, una valoración y una variable de percepción urbana.
+      La acumulación permite visualizar coincidencias y diferencias
+      entre los recorridos elegidos.
+    </p>
+
+    <div class="nota-escala">
+      <strong>Cómo leer la pizarra.</strong>
+      Cada columna representa una calle. Cada columna está dividida
+      en dos lados: positivo, a la izquierda, y negativo, a la derecha.
+      Los colores distinguen las variables observadas. La cantidad de
+      fichas corresponde al número de respuestas registradas para cada
+      combinación de calle, variable y valoración.
+    </div>
+  </div>
+
+  <div>
+    <h2>02 / Índice de variables</h2>
+
+    <div class="indice">
+      <div class="variable">
+        <div class="muestra-color azul"></div>
+        <div>
+          <strong>Seguridad percibida</strong>
+          <p>Qué tan seguro o resguardado se siente el recorrido.</p>
+        </div>
+      </div>
+
+      <div class="variable">
+        <div class="muestra-color verde"></div>
+        <div>
+          <strong>Transitabilidad</strong>
+          <p>Qué tan fácil, cómodo y expedito resulta desplazarse.</p>
+        </div>
+      </div>
+
+      <div class="variable">
+        <div class="muestra-color amarillo"></div>
+        <div>
+          <strong>Luminosidad percibida</strong>
+          <p>La percepción de luz y visibilidad en el recorrido.</p>
+        </div>
+      </div>
+
+      <div class="variable">
+        <div class="muestra-color rojo"></div>
+        <div>
+          <strong>Vitalidad urbana percibida</strong>
+          <p>La actividad, presencia de personas y dinamismo que se percibe en la calle.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nota-escala">
+      Los colores representan las variables, no una valoración positiva
+      o negativa por sí mismos. La valoración se lee según el lado del
+      tubo donde se encuentra cada ficha.
+    </div>
+  </div>
+</section>
+
+<section class="seccion-pizarra">
+  <div class="titulo-pizarra">
     <div>
-      Florencia Pimentel<br>
-      Estudiante de la EAD · PUCV
+      <h2>03 / Pizarra de levantamiento</h2>
+      <p>
+        Registra los resultados del día y observa cómo se transforman
+        las cuatro calles a medida que se incorporan nuevas respuestas.
+      </p>
+    </div>
+    <div class="estado-lugar" id="etiquetaLugar">Valparaíso · Registro activo</div>
+  </div>
+
+  <section class="controles" aria-label="Controles de registro">
+    <div class="campo">
+      <label for="fecha">Fecha del registro</label>
+      <input type="date" id="fecha">
     </div>
 
-    <div class="numero">
-      Proyecto de observación<br>
-      Visualización / 001
+    <div class="campo">
+      <label for="lugar">Lugar</label>
+      <select id="lugar">
+        <option value="valparaiso">Valparaíso · Barrio Puerto</option>
+        <option value="buenosaires">Buenos Aires · Por definir</option>
+      </select>
     </div>
-  </header>
 
-  <main>
-    <section class="contenido">
-      <div class="etiqueta">Observación · Registro visual</div>
+    <div class="campo">
+      <label for="calle">Calle</label>
+      <select id="calle">
+        <option value="Serrano">Serrano</option>
+        <option value="Cochrane">Cochrane</option>
+        <option value="Blanco">Blanco</option>
+        <option value="Errázuriz">Errázuriz</option>
+      </select>
+    </div>
 
-      <h1>
-        Tramas de<br>
-        <span>elección.</span>
-      </h1>
+    <div class="campo">
+      <label for="valoracion">Valoración</label>
+      <select id="valoracion">
+        <option value="positivo">Positiva · Izquierda</option>
+        <option value="negativo">Negativa · Derecha</option>
+      </select>
+    </div>
 
-      <p class="descripcion">
-        Observar es atender a las relaciones, los recorridos y las
-        decisiones que construyen nuestra experiencia de los lugares.
-      </p>
+    <div class="campo">
+      <label for="variable">Variable</label>
+      <select id="variable">
+        <option value="azul">Azul · Seguridad</option>
+        <option value="verde">Verde · Transitabilidad</option>
+        <option value="amarillo">Amarillo · Luminosidad</option>
+        <option value="rojo">Rojo · Vitalidad urbana</option>
+      </select>
+    </div>
 
-      <p class="instruccion">
-        <span class="punto"></span>
-        Una lluvia de formas, encuentros y acumulaciones.
-      </p>
-    </section>
-  </main>
+    <div class="campo">
+      <label for="cantidad">Cantidad de fichas</label>
+      <input type="number" id="cantidad" value="1" min="1" max="200">
+    </div>
 
-  <footer>
-    <span>Registro de observación</span>
-    <span>Valparaíso · Chile</span>
-    <span>2026</span>
-  </footer>
+    <div class="acciones">
+      <button class="boton" id="agregar">+ Añadir fichas</button>
+      <button class="boton boton-secundario" id="deshacer">Deshacer último registro</button>
+      <button class="boton boton-secundario" id="exportar">Exportar CSV</button>
+      <button class="boton boton-peligro" id="reiniciar">Reiniciar este día</button>
+    </div>
+  </section>
+
+  <div class="resumen">
+    <div>Fecha: <strong id="fechaResumen">—</strong></div>
+    <div>Ubicación: <strong id="lugarResumen">—</strong></div>
+    <div>Total de fichas: <strong id="totalResumen">0</strong></div>
+    <div class="estado" id="estado">Esperando registros.</div>
+  </div>
+
+  <div class="pizarra" id="pizarra"></div>
+
+  <div class="pie-pizarra">
+    <span>Izquierda: valoración positiva</span>
+    <span>Derecha: valoración negativa</span>
+    <span>Una ficha = una respuesta registrada</span>
+  </div>
+</section>
+
+<section class="nota-buenos-aires">
+  <div>
+    <h2>04 / Continuidad territorial</h2>
+    <p>
+      Este sistema de registro también se utilizará durante el trabajo
+      de campo en Buenos Aires. Una vez definido el lugar de observación,
+      se incorporará su identificación para registrar y comparar los
+      resultados de ambos territorios.
+    </p>
+  </div>
+  <div>
+    <h2>Próxima etapa</h2>
+    <p>
+      Definir el lugar de levantamiento en Buenos Aires y mantener los
+      mismos criterios de registro para facilitar la lectura comparada
+      entre los dos puertos.
+    </p>
+    <span class="estado-lugar">Buenos Aires · Lugar por definir</span>
+  </div>
+</section>
+
+<footer>
+  <span>Taller de Diseño de Servicios 2026</span>
+  <span>Escuela de Arquitectura y Diseño · PUCV</span>
+  <span>Levantamiento de información física</span>
+</footer>
+
 </div>
 
 <script>
 (() => {
-  const {
-    Engine,
-    Render,
-    Runner,
-    Bodies,
-    Body,
-    Composite,
-    Events
-  } = Matter;
+  const CALLES = ["Serrano", "Cochrane", "Blanco", "Errázuriz"];
 
-  const contenedor = document.getElementById("lluvia");
-
-  const colores = [
-    "rgba(255, 25, 60, 0.57)",
-    "rgba(0, 100, 255, 0.55)",
-    "rgba(255, 195, 0, 0.62)",
-    "rgba(0, 210, 120, 0.55)"
-  ];
-
-  const CANTIDAD_MAXIMA = 204;
-  const TAMANO = 40;
-  const RADIO_FISICO = TAMANO * 0.77;
-  const INTERVALO_LLEGADA = 135;
-
-  let ancho = Math.max(1, window.innerWidth / 2);
-  let alto = window.innerHeight;
-  let piezas = [];
-  let paredes = [];
-  let ultimoLanzamiento = 0;
-  let indiceColor = 0;
-
-  const motor = Engine.create({
-    enableSleeping: true,
-    positionIterations: 10,
-    velocityIterations: 8,
-    constraintIterations: 4
-  });
-
-  motor.gravity.x = 0;
-  motor.gravity.y = 1;
-  motor.gravity.scale = 0.001;
-
-  const render = Render.create({
-    element: contenedor,
-    engine: motor,
-    options: {
-      width: ancho,
-      height: alto,
-      wireframes: false,
-      background: "transparent",
-      pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-      showSleeping: false
+  const VARIABLES = {
+    azul: {
+      nombre: "Seguridad percibida",
+      clase: "azul"
+    },
+    verde: {
+      nombre: "Transitabilidad",
+      clase: "verde"
+    },
+    amarillo: {
+      nombre: "Luminosidad percibida",
+      clase: "amarillo"
+    },
+    rojo: {
+      nombre: "Vitalidad urbana percibida",
+      clase: "rojo"
     }
-  });
+  };
 
-  const runner = Runner.create({
-    delta: 1000 / 60,
-    isFixed: true
-  });
+  const NOMBRES_LUGAR = {
+    valparaiso: "Valparaíso · Barrio Puerto",
+    buenosaires: "Buenos Aires · Lugar por definir"
+  };
 
-  function azar(min, max) {
-    return Math.random() * (max - min) + min;
+  const pizarra = document.getElementById("pizarra");
+  const fechaInput = document.getElementById("fecha");
+  const lugarInput = document.getElementById("lugar");
+  const calleInput = document.getElementById("calle");
+  const valoracionInput = document.getElementById("valoracion");
+  const variableInput = document.getElementById("variable");
+  const cantidadInput = document.getElementById("cantidad");
+
+  let registros = [];
+  let siguienteId = 1;
+
+  function fechaLocal() {
+    const ahora = new Date();
+    const desfase = ahora.getTimezoneOffset() * 60000;
+    return new Date(ahora.getTime() - desfase)
+      .toISOString()
+      .slice(0, 10);
   }
 
-  function crearParedes() {
-    for (const pared of paredes) {
-      Composite.remove(motor.world, pared);
-    }
+  fechaInput.value = fechaLocal();
 
-    const grosor = 180;
-
-    paredes = [
-      Bodies.rectangle(
-        ancho / 2,
-        alto + grosor / 2,
-        ancho + grosor * 2,
-        grosor,
-        {
-          isStatic: true,
-          friction: 1,
-          restitution: 0,
-          render: { visible: false }
-        }
-      ),
-
-      Bodies.rectangle(
-        -grosor / 2,
-        alto / 2,
-        grosor,
-        alto * 3,
-        {
-          isStatic: true,
-          friction: 1,
-          restitution: 0,
-          render: { visible: false }
-        }
-      ),
-
-      Bodies.rectangle(
-        ancho + grosor / 2,
-        alto / 2,
-        grosor,
-        alto * 3,
-        {
-          isStatic: true,
-          friction: 1,
-          restitution: 0,
-          render: { visible: false }
-        }
-      )
-    ];
-
-    Composite.add(motor.world, paredes);
+  function claveActual() {
+    return "tramas-registro-v1-" +
+      lugarInput.value + "-" +
+      fechaInput.value;
   }
 
-  function crearPentagono() {
-    if (piezas.length >= CANTIDAD_MAXIMA) return;
+  function guardar() {
+    try {
+      localStorage.setItem(claveActual(), JSON.stringify(registros));
+      document.getElementById("estado").textContent = "Registro guardado en este navegador.";
+    } catch (error) {
+      document.getElementById("estado").textContent =
+        "No se pudo guardar automáticamente en este navegador.";
+    }
+  }
 
-    const margen = TAMANO + 3;
-    const x = azar(
-      margen,
-      Math.max(margen, ancho - margen)
-    );
+  function cargar() {
+    try {
+      registros = JSON.parse(localStorage.getItem(claveActual()) || "[]");
+      if (!Array.isArray(registros)) registros = [];
+    } catch (error) {
+      registros = [];
+    }
 
-    const pieza = Bodies.polygon(
-      x,
-      -TAMANO * 2 - azar(0, alto * 0.22),
-      5,
-      RADIO_FISICO,
-      {
-        restitution: 0.005,
-        friction: 0.92,
-        frictionStatic: 1,
-        frictionAir: 0.018,
-        density: 0.0018,
-        slop: 0.01,
-        sleepThreshold: 35,
-        angle: azar(-0.5, 0.5),
-        render: {
-          visible: false
+    siguienteId = registros.reduce(
+      (maximo, registro) => Math.max(maximo, registro.id || 0),
+      0
+    ) + 1;
+
+    dibujar();
+  }
+
+  function crearEstructura() {
+    pizarra.innerHTML = "";
+
+    CALLES.forEach((calle, indice) => {
+      const tubo = document.createElement("article");
+      tubo.className = "tubo";
+      tubo.dataset.calle = calle;
+
+      tubo.innerHTML = `
+        <div class="tubo-cabecera">
+          <span class="tubo-numero">CALLE 0${indice + 1}</span>
+          <div class="tubo-nombre">${calle}</div>
+          <div class="tubo-conteo">0 respuestas</div>
+        </div>
+
+        <div class="tubo-cuerpo">
+          <div class="mitad" data-lado="positivo">
+            <div class="mitad-titulo">Positivo</div>
+            <div class="mitad-conteo">0</div>
+            <div class="fichas"></div>
+          </div>
+
+          <div class="mitad" data-lado="negativo">
+            <div class="mitad-titulo">Negativo</div>
+            <div class="mitad-conteo">0</div>
+            <div class="fichas"></div>
+          </div>
+        </div>
+
+        <div class="tubo-leyenda">
+          Las fichas representan respuestas registradas en esta calle.
+        </div>
+      `;
+
+      pizarra.appendChild(tubo);
+    });
+  }
+
+  function dibujar() {
+    crearEstructura();
+
+    let total = 0;
+
+    CALLES.forEach(calle => {
+      const tubo = [...pizarra.querySelectorAll(".tubo")]
+        .find(elemento => elemento.dataset.calle === calle);
+
+      const registrosCalle = registros.filter(r => r.calle === calle);
+      const conteoTotal = registrosCalle.reduce((suma, r) => suma + r.cantidad, 0);
+
+      tubo.querySelector(".tubo-conteo").textContent =
+        `${conteoTotal} ${conteoTotal === 1 ? "respuesta" : "respuestas"}`;
+
+      total += conteoTotal;
+
+      ["positivo", "negativo"].forEach(lado => {
+        const mitad = tubo.querySelector(`[data-lado="${lado}"]`);
+        const fichas = mitad.querySelector(".fichas");
+
+        const grupo = registrosCalle.filter(r => r.valoracion === lado);
+        const conteoLado = grupo.reduce((suma, r) => suma + r.cantidad, 0);
+
+        mitad.querySelector(".mitad-conteo").textContent = conteoLado;
+
+        if (conteoLado === 0) {
+          const vacio = document.createElement("div");
+          vacio.className = "vacio";
+          vacio.textContent = "Sin registros";
+          fichas.appendChild(vacio);
+          return;
         }
-      }
-    );
 
-    pieza.colorPentagono =
-      colores[indiceColor % colores.length];
+        /*
+          Se dibuja una ficha por respuesta. Para mantener la
+          pizarra legible, se muestran hasta 90 por lado; el conteo
+          conserva siempre el total exacto.
+        */
+        let dibujadas = 0;
+        const maximoVisible = 90;
 
-    indiceColor++;
+        grupo.forEach(registro => {
+          for (let i = 0; i < registro.cantidad; i++) {
+            if (dibujadas >= maximoVisible) break;
 
-    Body.setVelocity(pieza, {
-      x: azar(-0.65, 0.65),
-      y: azar(0, 0.3)
+            const ficha = document.createElement("span");
+            ficha.className = `ficha ${registro.variable}`;
+
+            const giro = ((registro.id * 13 + i * 17) % 17) - 8;
+            ficha.style.setProperty("--giro", `${giro}deg`);
+            ficha.title = `${VARIABLES[registro.variable].nombre} · ${lado}`;
+
+            fichas.appendChild(ficha);
+            dibujadas++;
+          }
+        });
+      });
     });
 
-    Body.setAngularVelocity(
-      pieza,
-      azar(-0.012, 0.012)
+    document.getElementById("fechaResumen").textContent = fechaInput.value;
+    document.getElementById("lugarResumen").textContent =
+      NOMBRES_LUGAR[lugarInput.value];
+
+    document.getElementById("totalResumen").textContent = total;
+    document.getElementById("etiquetaLugar").textContent =
+      NOMBRES_LUGAR[lugarInput.value] + " · Registro activo";
+  }
+
+  document.getElementById("agregar").addEventListener("click", () => {
+    const cantidad = Math.floor(Number(cantidadInput.value));
+
+    if (!Number.isFinite(cantidad) || cantidad < 1 || cantidad > 200) {
+      alert("Ingresa una cantidad entre 1 y 200 fichas.");
+      return;
+    }
+
+    registros.push({
+      id: siguienteId++,
+      calle: calleInput.value,
+      valoracion: valoracionInput.value,
+      variable: variableInput.value,
+      cantidad,
+      fecha: fechaInput.value,
+      lugar: lugarInput.value
+    });
+
+    guardar();
+    dibujar();
+
+    document.getElementById("estado").textContent =
+      `Se añadieron ${cantidad} ficha${cantidad === 1 ? "" : "s"} a ${calleInput.value}.`;
+  });
+
+  document.getElementById("deshacer").addEventListener("click", () => {
+    if (registros.length === 0) {
+      document.getElementById("estado").textContent = "No hay registros que deshacer.";
+      return;
+    }
+
+    registros.pop();
+    guardar();
+    dibujar();
+
+    document.getElementById("estado").textContent =
+      "Se eliminó el último registro añadido.";
+  });
+
+  document.getElementById("reiniciar").addEventListener("click", () => {
+    if (registros.length === 0) return;
+
+    const confirmar = confirm(
+      "¿Quieres eliminar todos los registros de esta fecha y ubicación? Esta acción no se puede deshacer."
     );
 
-    piezas.push(pieza);
-    Composite.add(motor.world, pieza);
-  }
+    if (!confirmar) return;
 
-  function dibujarPentagono(ctx, pieza) {
-    const lados = 5;
+    registros = [];
+    guardar();
+    dibujar();
 
-    ctx.save();
-    ctx.translate(
-      pieza.position.x,
-      pieza.position.y
-    );
-    ctx.rotate(pieza.angle);
-
-    ctx.beginPath();
-
-    for (let i = 0; i < lados; i++) {
-      const angulo =
-        -Math.PI / 2 + i * (Math.PI * 2 / lados);
-
-      const x = Math.cos(angulo) * TAMANO;
-      const y = Math.sin(angulo) * TAMANO;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    }
-
-    ctx.closePath();
-    ctx.fillStyle = pieza.colorPentagono;
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  /*
-    Dibujamos las piezas con sus colores translúcidos.
-    La mezcla multiplica las capas y permite apreciar
-    los tonos donde algunas figuras se superponen.
-  */
-  Events.on(render, "afterRender", () => {
-    const ctx = render.context;
-
-    ctx.save();
-    ctx.globalCompositeOperation = "multiply";
-
-    for (const pieza of piezas) {
-      dibujarPentagono(ctx, pieza);
-    }
-
-    ctx.restore();
+    document.getElementById("estado").textContent =
+      "Se reinició la pizarra para esta fecha y ubicación.";
   });
 
-  Events.on(motor, "collisionStart", event => {
-    for (const pareja of event.pairs) {
-      for (const pieza of [pareja.bodyA, pareja.bodyB]) {
-        if (!pieza.isStatic && pieza.speed < 0.3) {
-          Body.setVelocity(pieza, {
-            x: pieza.velocity.x * 0.5,
-            y: pieza.velocity.y * 0.5
-          });
+  document.getElementById("exportar").addEventListener("click", () => {
+    const filas = [
+      ["Fecha", "Lugar", "Calle", "Valoración", "Variable", "Cantidad"]
+    ];
 
-          Body.setAngularVelocity(
-            pieza,
-            pieza.angularVelocity * 0.5
-          );
-        }
-      }
-    }
+    registros.forEach(r => {
+      filas.push([
+        r.fecha,
+        NOMBRES_LUGAR[r.lugar],
+        r.calle,
+        r.valoracion,
+        VARIABLES[r.variable].nombre,
+        r.cantidad
+      ]);
+    });
+
+    const csv = filas.map(fila =>
+      fila.map(valor =>
+        '"' + String(valor).replace(/"/g, '""') + '"'
+      ).join(",")
+    ).join("\r\n");
+
+    const archivo = new Blob(["\uFEFF" + csv], {
+      type: "text/csv;charset=utf-8;"
+    });
+
+    const url = URL.createObjectURL(archivo);
+    const enlace = document.createElement("a");
+
+    enlace.href = url;
+    enlace.download =
+      `levantamiento-${lugarInput.value}-${fechaInput.value}.csv`;
+
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+
+    URL.revokeObjectURL(url);
   });
 
-  Events.on(motor, "beforeUpdate", () => {
-    const ahora = performance.now();
+  fechaInput.addEventListener("change", cargar);
+  lugarInput.addEventListener("change", cargar);
 
-    if (
-      ahora - ultimoLanzamiento >= INTERVALO_LLEGADA &&
-      piezas.length < CANTIDAD_MAXIMA
-    ) {
-      crearPentagono();
-      ultimoLanzamiento = ahora;
-    }
-
-    for (const pieza of piezas) {
-      if (pieza.isSleeping) continue;
-
-      const velocidad = Math.hypot(
-        pieza.velocity.x,
-        pieza.velocity.y
-      );
-
-      if (
-        velocidad < 0.045 &&
-        Math.abs(pieza.angularVelocity) < 0.01
-      ) {
-        Body.setVelocity(pieza, {
-          x: 0,
-          y: 0
-        });
-
-        Body.setAngularVelocity(pieza, 0);
-      }
-    }
-  });
-
-  /*
-    Elimina piezas antiguas enterradas por debajo de la vista
-    cuando sea necesario, evitando un crecimiento infinito.
-  */
-  Events.on(motor, "afterUpdate", () => {
-    for (let i = piezas.length - 1; i >= 0; i--) {
-      const pieza = piezas[i];
-
-      if (pieza.position.y > alto + TAMANO * 4) {
-        Composite.remove(motor.world, pieza);
-        piezas.splice(i, 1);
-      }
-    }
-  });
-
-  crearParedes();
-
-  // Lluvia inicial para que el movimiento comience enseguida.
-  for (let i = 0; i < 24; i++) {
-    crearPentagono();
-  }
-
-  ultimoLanzamiento = performance.now();
-
-  window.addEventListener("resize", () => {
-    ancho = Math.max(1, window.innerWidth / 2);
-    alto = window.innerHeight;
-
-    render.canvas.width =
-      ancho * render.options.pixelRatio;
-
-    render.canvas.height =
-      alto * render.options.pixelRatio;
-
-    render.canvas.style.width = ancho + "px";
-    render.canvas.style.height = alto + "px";
-
-    render.options.width = ancho;
-    render.options.height = alto;
-
-    crearParedes();
-
-    /*
-      Si alguna pieza queda fuera del nuevo ancho,
-      la regresamos al área de la lluvia.
-    */
-    for (const pieza of piezas) {
-      if (pieza.position.x > ancho - TAMANO) {
-        Body.setPosition(pieza, {
-          x: ancho - TAMANO,
-          y: pieza.position.y
-        });
-      }
-
-      if (pieza.position.x < TAMANO) {
-        Body.setPosition(pieza, {
-          x: TAMANO,
-          y: pieza.position.y
-        });
-      }
-    }
-  });
-
-  Runner.run(runner, motor);
-  Render.run(render);
+  crearEstructura();
+  cargar();
 })();
 </script>
 
