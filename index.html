@@ -35,7 +35,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      z-index: -1;
+      z-index: 0;
       touch-action: none;
       cursor: grab;
     }
@@ -46,7 +46,7 @@
 
     header {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       display: flex;
       justify-content: space-between;
       padding: 28px 5vw;
@@ -66,7 +66,7 @@
 
     main {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       min-height: 75svh;
       display: flex;
       flex-direction: column;
@@ -119,7 +119,7 @@
 
     footer {
       position: absolute;
-      z-index: 2;
+      z-index: 3;
       bottom: 0;
       left: 0;
       right: 0;
@@ -164,29 +164,38 @@
       border-radius: 100px;
       padding: 11px 16px;
       font: inherit;
+      font-size: 10px;
       cursor: pointer;
     }
 
     @media (max-width: 600px) {
-      header { padding: 22px 6vw; }
+      header {
+        padding: 22px 6vw;
+      }
 
-      main { padding: 10vh 7vw 28vh; }
+      main {
+        padding: 10vh 7vw 28vh;
+      }
 
-      h1 { font-size: clamp(48px, 14vw, 78px); }
+      h1 {
+        font-size: clamp(48px, 14vw, 78px);
+      }
 
       .descripcion {
         max-width: 280px;
         font-size: 13px;
       }
 
-      footer { padding: 20px 6vw 24px; }
+      footer {
+        padding: 20px 6vw 24px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="pagina" id="pagina">
-    <canvas id="lluvia" aria-label="Octágonos de colores que puedes mover"></canvas>
+    <canvas id="lluvia" aria-label="Octágonos de colores interactivos"></canvas>
 
     <header>
       <div class="marca">Proyecto de observación</div>
@@ -240,30 +249,33 @@
       "#4da67d"
     ];
 
-    const cantidad = 320;
-    const gravedad = 0.22;
+    const CANTIDAD = 220;
+    const GRAVEDAD = 0.24;
+    const FRICCION = 0.985;
     const piezas = [];
 
-    let ancho, alto;
+    let ancho = 0;
+    let alto = 0;
     let ultimoTiempo = 0;
+    let raf = 0;
     let arrastrada = null;
     let punteroAnterior = null;
-    let raf;
 
     const azar = (min, max) => Math.random() * (max - min) + min;
+    const limitar = (v, min, max) => Math.max(min, Math.min(max, v));
 
-    class Pieza {
-      constructor(x, y, tamano, color, velocidadInicial = 0) {
+    class Octagono {
+      constructor(x, y, tamano, color) {
         this.x = x;
         this.y = y;
         this.t = tamano;
         this.color = color;
-        this.vx = azar(-1.8, 1.8);
-        this.vy = velocidadInicial || azar(-1, 2);
+        this.vx = azar(-1.1, 1.1);
+        this.vy = azar(0.5, 2.5);
         this.angulo = azar(0, Math.PI / 4);
-        this.giro = azar(-0.035, 0.035);
+        this.giro = azar(-0.008, 0.008);
         this.agarrada = false;
-        this.detenida = false;
+        this.quieta = false;
       }
 
       dibujar() {
@@ -274,14 +286,13 @@
         ctx.rotate(this.angulo);
         ctx.beginPath();
 
-        // Octágono regular, sin contornos ni efectos.
         for (let i = 0; i < 8; i++) {
           const a = (Math.PI * 2 * i / 8) - Math.PI / 8;
-          const x = Math.cos(a) * radio;
-          const y = Math.sin(a) * radio;
+          const px = Math.cos(a) * radio;
+          const py = Math.sin(a) * radio;
 
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
         }
 
         ctx.closePath();
@@ -291,41 +302,44 @@
       }
 
       actualizar(dt) {
-        if (this.agarrada) return;
+        if (this.agarrada || this.quieta) return;
 
-        this.vy += gravedad * dt;
-        this.vy = Math.min(this.vy, 10);
+        this.vy += GRAVEDAD * dt;
+        this.vy = Math.min(this.vy, 9);
 
         this.x += this.vx * dt;
         this.y += this.vy * dt;
         this.angulo += this.giro * dt;
 
-        const r = this.t * 0.42;
+        const r = this.t * 0.46;
 
-        // Límites laterales.
-        if (this.x < r) {
+        if (this.x - r < 0) {
           this.x = r;
-          this.vx = Math.abs(this.vx) * 0.55;
+          this.vx = Math.abs(this.vx) * 0.3;
         }
 
-        if (this.x > ancho - r) {
+        if (this.x + r > ancho) {
           this.x = ancho - r;
-          this.vx = -Math.abs(this.vx) * 0.55;
+          this.vx = -Math.abs(this.vx) * 0.3;
         }
 
-        // Suelo.
         if (this.y + r >= alto) {
           this.y = alto - r;
-          this.vy *= -0.12;
+          this.vy = 0;
+          this.vx *= FRICCION;
+          this.giro *= 0.8;
 
-          if (Math.abs(this.vy) < 0.7) this.vy = 0;
+          if (Math.abs(this.vx) < 0.12) this.vx = 0;
+          if (Math.abs(this.giro) < 0.001) this.giro = 0;
 
-          this.vx *= 0.985;
+          if (this.vx === 0 && this.vy === 0 && this.giro === 0) {
+            this.quieta = true;
+          }
         }
       }
     }
 
-    function ajustar() {
+    function ajustarCanvas() {
       const rect = pagina.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -343,20 +357,20 @@
     function crearPiezas() {
       piezas.length = 0;
 
-      for (let i = 0; i < cantidad; i++) {
-        const t = azar(20, 43);
+      for (let i = 0; i < CANTIDAD; i++) {
+        const t = azar(30, 52);
 
-        piezas.push(new Pieza(
-          azar(t, Math.max(t, ancho - t)),
-          azar(-alto * 3, -20),
+        piezas.push(new Octagono(
+          azar(t / 2, Math.max(t / 2, ancho - t / 2)),
+          azar(-alto * 3, -30),
           t,
-          colores[Math.floor(Math.random() * colores.length)],
-          azar(0, 2)
+          colores[Math.floor(Math.random() * colores.length)]
         ));
       }
     }
 
-    // Colisiones aproximadas para que las piezas se empujen.
+    // Las piezas se empujan y se apoyan unas sobre otras.
+    // Cuando una pieza se estabiliza, queda inmóvil.
     function resolverColisiones() {
       for (let i = 0; i < piezas.length; i++) {
         const a = piezas[i];
@@ -367,55 +381,116 @@
           const dx = b.x - a.x;
           const dy = b.y - a.y;
           const distancia = Math.hypot(dx, dy);
-          const minimo = (a.t + b.t) * 0.39;
+          const minimo = (a.t + b.t) * 0.43;
 
           if (distancia === 0 || distancia >= minimo) continue;
 
           const nx = dx / distancia;
           const ny = dy / distancia;
-          const solapamiento = minimo - distancia;
+          const penetracion = minimo - distancia;
 
-          if (!a.agarrada && !b.agarrada) {
-            a.x -= nx * solapamiento * 0.5;
-            a.y -= ny * solapamiento * 0.5;
-            b.x += nx * solapamiento * 0.5;
-            b.y += ny * solapamiento * 0.5;
+          if (a.agarrada && b.agarrada) continue;
 
-            const relativa =
-              (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+          if (a.agarrada) {
+            b.x += nx * penetracion;
+            b.y += ny * penetracion;
+            b.quieta = false;
+            b.vx += nx * 0.4;
+            b.vy += ny * 0.4;
+            continue;
+          }
 
-            if (relativa < 0) {
-              const impulso = relativa * 0.36;
+          if (b.agarrada) {
+            a.x -= nx * penetracion;
+            a.y -= ny * penetracion;
+            a.quieta = false;
+            a.vx -= nx * 0.4;
+            a.vy -= ny * 0.4;
+            continue;
+          }
+
+          // Separar las piezas que se solapan.
+          const total = a.quieta && b.quieta ? 0 : 1;
+
+          if (total === 0) continue;
+
+          if (a.quieta) {
+            b.x += nx * penetracion;
+            b.y += ny * penetracion;
+          } else if (b.quieta) {
+            a.x -= nx * penetracion;
+            a.y -= ny * penetracion;
+          } else {
+            a.x -= nx * penetracion * 0.5;
+            a.y -= ny * penetracion * 0.5;
+            b.x += nx * penetracion * 0.5;
+            b.y += ny * penetracion * 0.5;
+          }
+
+          // Amortiguar el movimiento cuando chocan.
+          const relativa = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+
+          if (relativa < 0) {
+            const impulso = relativa * 0.35;
+
+            if (!a.quieta) {
               a.vx += impulso * nx;
               a.vy += impulso * ny;
+            }
+
+            if (!b.quieta) {
               b.vx -= impulso * nx;
               b.vy -= impulso * ny;
             }
-          } else {
-            const libre = a.agarrada ? b : a;
-            const fija = a.agarrada ? a : b;
-            const signo = a.agarrada ? 1 : -1;
+          }
 
-            libre.x += nx * solapamiento * signo;
-            libre.y += ny * solapamiento * signo;
-            libre.vx += nx * signo * 0.5;
-            libre.vy += ny * signo * 0.5;
+          // Si una pieza se apoya encima de otra, puede asentarse.
+          if (dy > 0 && Math.abs(dx) < minimo * 0.7 && a.vy >= b.vy) {
+            a.y = b.y - minimo;
+            a.vy = 0;
+            a.vx *= 0.6;
+          } else if (dy < 0 && Math.abs(dx) < minimo * 0.7 && b.vy >= a.vy) {
+            b.y = a.y - minimo;
+            b.vy = 0;
+            b.vx *= 0.6;
+          }
+
+          // Congelar piezas cuando ya no tienen movimiento apreciable.
+          for (const p of [a, b]) {
+            if (
+              !p.agarrada &&
+              Math.abs(p.vx) < 0.08 &&
+              Math.abs(p.vy) < 0.12 &&
+              Math.abs(p.giro) < 0.001
+            ) {
+              p.vx = 0;
+              p.vy = 0;
+              p.giro = 0;
+              p.quieta = true;
+            }
           }
         }
       }
     }
 
     function dibujar(tiempo) {
-      const dt = Math.min((tiempo - (ultimoTiempo || tiempo)) / 16.67, 1.5);
-      ultimoTiempo = tiempo;
+      const dt = Math.min(
+        (tiempo - (ultimoTiempo || tiempo)) / 16.67,
+        1
+      );
 
+      ultimoTiempo = tiempo;
       ctx.clearRect(0, 0, ancho, alto);
 
-      for (const pieza of piezas) pieza.actualizar(dt);
+      for (const pieza of piezas) {
+        pieza.actualizar(dt);
+      }
 
       resolverColisiones();
 
-      for (const pieza of piezas) pieza.dibujar();
+      for (const pieza of piezas) {
+        pieza.dibujar();
+      }
 
       raf = requestAnimationFrame(dibujar);
     }
@@ -425,8 +500,10 @@
       ultimoTiempo = 0;
       arrastrada = null;
       punteroAnterior = null;
-      ajustar();
+
+      ajustarCanvas();
       crearPiezas();
+
       raf = requestAnimationFrame(dibujar);
     }
 
@@ -442,19 +519,18 @@
     canvas.addEventListener("pointerdown", evento => {
       const p = posicion(evento);
 
-      // Elegir la pieza visible más cercana al cursor.
       for (let i = piezas.length - 1; i >= 0; i--) {
         const pieza = piezas[i];
         const distancia = Math.hypot(p.x - pieza.x, p.y - pieza.y);
 
-        if (distancia <= pieza.t * 0.75) {
+        if (distancia <= pieza.t * 0.65) {
           arrastrada = pieza;
           pieza.agarrada = true;
+          pieza.quieta = false;
           pieza.vx = 0;
           pieza.vy = 0;
           punteroAnterior = p;
 
-          // Llevar la pieza seleccionada al frente.
           piezas.splice(i, 1);
           piezas.push(pieza);
 
@@ -466,23 +542,26 @@
     });
 
     canvas.addEventListener("pointermove", evento => {
+      if (!arrastrada || !punteroAnterior) return;
+
       const p = posicion(evento);
 
-      if (arrastrada && punteroAnterior) {
-        arrastrada.vx = (p.x - punteroAnterior.x) * 0.8;
-        arrastrada.vy = (p.y - punteroAnterior.y) * 0.8;
-        arrastrada.x = p.x;
-        arrastrada.y = p.y;
-        punteroAnterior = p;
-      }
+      arrastrada.vx = limitar((p.x - punteroAnterior.x) * 0.7, -14, 14);
+      arrastrada.vy = limitar((p.y - punteroAnterior.y) * 0.7, -14, 14);
+      arrastrada.x = p.x;
+      arrastrada.y = p.y;
+
+      punteroAnterior = p;
     });
 
     function soltar() {
-      if (arrastrada) {
-        arrastrada.agarrada = false;
-        arrastrada.vx = Math.max(-16, Math.min(16, arrastrada.vx));
-        arrastrada.vy = Math.max(-16, Math.min(16, arrastrada.vy));
-      }
+      if (!arrastrada) return;
+
+      arrastrada.agarrada = false;
+      arrastrada.quieta = false;
+
+      arrastrada.vx = limitar(arrastrada.vx, -14, 14);
+      arrastrada.vy = limitar(arrastrada.vy, -14, 14);
 
       arrastrada = null;
       punteroAnterior = null;
@@ -490,9 +569,17 @@
 
     canvas.addEventListener("pointerup", soltar);
     canvas.addEventListener("pointercancel", soltar);
+
     boton.addEventListener("click", iniciar);
 
-    window.addEventListener("resize", ajustar);
+    window.addEventListener("resize", () => {
+      ajustarCanvas();
+
+      for (const pieza of piezas) {
+        pieza.x = limitar(pieza.x, pieza.t / 2, ancho - pieza.t / 2);
+        pieza.quieta = false;
+      }
+    });
 
     iniciar();
   </script>
