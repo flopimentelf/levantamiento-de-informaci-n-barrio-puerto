@@ -5,1306 +5,450 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tramas de elección | Taller de Diseño de Servicios 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
-
 <style>
-:root {
-  --azul: #0875ff;
-  --verde: #00c878;
-  --amarillo: #ffd000;
-  --rojo: #ed382b;
-  --negro: #171717;
-  --linea: rgba(23,23,23,.3);
-}
-
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  margin: 0;
-  background: #fff;
-  color: var(--negro);
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-
-/* PRIMERA PARTE: LLUVIA DE PENTÁGONOS */
-
-.hero {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 100vh;
-  overflow: hidden;
-  background: white;
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 25px 30px 22px 34px;
-  pointer-events: none;
-}
-
-.hero-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--linea);
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.hero-meta { text-align: right; }
-
-.hero-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.kicker {
-  margin-bottom: 22px;
-  padding: 7px 10px;
-  border: 1px solid var(--azul);
-  color: var(--azul);
-  font-size: 10px;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-}
-
-.hero h1 {
-  margin: 0;
-  font-size: clamp(43px, 7vw, 100px);
-  letter-spacing: -.085em;
-  line-height: .9;
-}
-
-.hero h1 span { color: var(--azul); }
-
-.hero-description {
-  max-width: 340px;
-  margin-top: 28px;
-  font-size: 13px;
-  line-height: 1.65;
-}
-
-.hero-note {
-  margin-top: 24px;
-  color: #555;
-  font-size: 10px;
-  line-height: 1.7;
-}
-
-.hero-footer {
-  padding-top: 13px;
-  border-top: 1px solid var(--linea);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
-
-.hero-divider {
-  position: absolute;
-  z-index: 3;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background: rgba(23,23,23,.45);
-}
-
-#rain {
-  position: absolute;
-  inset: 0 0 0 50%;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-#rain canvas {
-  display: block;
-  mix-blend-mode: multiply;
-}
-
-/* INFORMACIÓN DEL PROYECTO */
-
-.research {
-  padding: 35px 30px 30px;
-}
-
-.section-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  align-items: flex-end;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--linea);
-}
-
-.section-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--azul);
-}
-
-.section-top h2 {
-  margin: 10px 0 0;
-  font-size: clamp(30px, 5vw, 58px);
-  letter-spacing: -.065em;
-  line-height: .95;
-}
-
-.section-top p {
-  max-width: 420px;
-  font-size: 12px;
-  line-height: 1.65;
-  color: #555;
-}
-
-.research-info {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  padding: 24px 0 28px;
-}
-
-.research-info h3 {
-  margin: 0 0 12px;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-}
-
-.research-question {
-  margin: 0 0 12px;
-  font-size: clamp(23px, 3vw, 36px);
-  letter-spacing: -.04em;
-  line-height: 1.08;
-}
-
-.body-copy {
-  max-width: 620px;
-  margin: 0;
-  color: #555;
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-.legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 16px 20px;
-}
-
-.legend-item {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.legend-dot {
-  width: 23px;
-  height: 23px;
-  flex: 0 0 23px;
-  clip-path: polygon(50% 0%, 98% 35%, 80% 94%, 20% 94%, 2% 35%);
-  opacity: .85;
-}
-
-.blue { background: var(--azul); }
-.green { background: var(--verde); }
-.yellow { background: var(--amarillo); }
-.red { background: var(--rojo); }
-
-.legend-item strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 11px;
-}
-
-.legend-item small {
-  display: block;
-  color: #555;
-  font-size: 10px;
-  line-height: 1.45;
-}
-
-/* CONTROLES */
-
-.controls {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0,1fr));
-  gap: 10px;
-  margin: 6px 0 20px;
-  padding: 15px;
-  border: 1px solid var(--linea);
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  min-width: 0;
-}
-
-.field label {
-  font-size: 9px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: #555;
-}
-
-.field input,
-.field select {
-  min-width: 0;
-  width: 100%;
-  min-height: 37px;
-  padding: 7px;
-  border: 1px solid var(--linea);
-  border-radius: 0;
-  background: white;
-  color: var(--negro);
-  font-size: 11px;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  grid-column: 1 / -1;
-}
-
-.btn {
-  padding: 10px 13px;
-  border: 1px solid var(--negro);
-  background: var(--negro);
-  color: white;
-  font-size: 10px;
-}
-
-.btn:hover {
-  background: white;
-  color: var(--negro);
-}
-
-.btn-light {
-  background: white;
-  color: var(--negro);
-}
-
-.btn-danger {
-  background: white;
-  color: #b32636;
-  border-color: #b32636;
-}
-
-.summary {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 0;
-  border-top: 1px solid var(--linea);
-  font-size: 10px;
-}
-
-.summary span:last-child { color: #666; }
-
-/* PIZARRA CONTINUA */
-
-.board-wrap {
-  position: relative;
-  margin-top: 12px;
-  padding: 12px 12px 0;
-  border: 1px solid #777;
-  background: #ededed;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.8);
-}
-
-.board-wrap::before {
-  content: "";
-  position: absolute;
-  top: -12px;
-  left: 0;
-  right: 0;
-  height: 12px;
-  background: linear-gradient(
-    135deg,
-    #aaa 0 5%,
-    #f5f5f5 5% 20%,
-    #d0d0d0 20% 25%,
-    #f5f5f5 25% 40%,
-    #aaa 40% 45%,
-    #f5f5f5 45% 60%,
-    #d0d0d0 60% 65%,
-    #f5f5f5 65% 80%,
-    #aaa 80% 85%,
-    #f5f5f5 85%
-  );
-  border: 1px solid #aaa;
-  border-bottom: 0;
-}
-
-.board {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  border: 1px solid #aaa;
-  border-bottom: 0;
-  background: #f4f4f4;
-}
-
-.street {
-  min-width: 0;
-  border-right: 1px solid #222;
-}
-
-.street:last-child { border-right: 0; }
-
-.street-heading {
-  padding: 12px 8px 9px;
-  background: rgba(255,255,255,.6);
-  text-align: center;
-  border-bottom: 1px solid #aaa;
-}
-
-.street-number {
-  display: block;
-  margin-bottom: 4px;
-  color: #777;
-  font-size: 8px;
-  letter-spacing: .1em;
-}
-
-.street-name {
-  font-size: clamp(13px, 1.5vw, 18px);
-  font-weight: 700;
-}
-
-.lane {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 345px;
-}
-
-.side {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background: #ededed;
-}
-
-.side + .side { border-left: 1px solid #aaa; }
-
-.side-label {
-  padding: 8px 2px;
-  text-align: center;
-  font-size: 10px;
-  font-weight: 700;
-  background: rgba(255,255,255,.55);
-  border-bottom: 1px solid rgba(0,0,0,.12);
-}
-
-.side-count {
-  padding: 5px 2px;
-  text-align: center;
-  font-size: 9px;
-  color: #666;
-}
-
-/* FICHAS PENTAGONALES, NO CIRCULARES */
-.spheres {
-  flex: 1;
-  min-height: 250px;
-  display: flex;
-  flex-wrap: wrap-reverse;
-  align-content: flex-start;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 0;
-  padding: 5px 3px 8px;
-  overflow: hidden;
-}
-
-.sphere {
-  position: relative;
-  flex: 0 0 39px;
-  width: 39px;
-  height: 39px;
-  margin: 0 -3px -3px;
-  clip-path: polygon(
-    50% 0%,
-    98% 35%,
-    80% 94%,
-    20% 94%,
-    2% 35%
-  );
-  opacity: .8;
-  mix-blend-mode: multiply;
-  border: none;
-  transform: rotate(var(--giro, 0deg));
-}
-
-.sphere.blue { background: rgba(8,117,255,.83); }
-.sphere.green { background: rgba(0,145,82,.83); }
-.sphere.yellow { background: rgba(255,208,0,.87); }
-.sphere.red { background: rgba(196,48,26,.82); }
-
-.side.empty .spheres::after {
-  content: "Sin registros";
-  align-self: center;
-  margin: auto;
-  color: #aaa;
-  font-size: 9px;
-}
-
-.street-total {
-  padding: 7px;
-  text-align: center;
-  background: #f7f7f7;
-  border-top: 1px solid #aaa;
-  font-size: 9px;
-  color: #555;
-}
-
-.board-bottom {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 22px;
-  padding: 18px 12px 16px;
-  background: #d9d9d9;
-  border: 1px solid #aaa;
-  border-top: 0;
-}
-
-.board-legend {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 8px;
-}
-
-.legend-tile {
-  min-width: 0;
-  text-align: center;
-}
-
-.legend-circles {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: center;
-  min-height: 53px;
-  padding: 4px;
-  background: #999;
-  border: 1px solid #777;
-}
-
-/* Las miniaturas de la leyenda también son pentágonos */
-.legend-circles .sphere {
-  flex: 0 0 23px;
-  width: 23px;
-  height: 23px;
-  margin: -1px;
-}
-
-.legend-tile p {
-  margin: 7px 0 0;
-  font-size: 9px;
-  line-height: 1.35;
-}
-
-.board-question { align-self: center; }
-
-.board-question h3 {
-  margin: 0 0 10px;
-  font-size: clamp(17px, 2vw, 26px);
-  letter-spacing: -.04em;
-}
-
-.board-question ol {
-  margin: 0;
-  padding-left: 17px;
-  font-size: 9px;
-  line-height: 1.7;
-}
-
-.board-foot {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0 0;
-  color: #555;
-  font-size: 9px;
-}
-
-.buenos-aires {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 35px;
-  padding: 20px 0;
-  border-top: 1px solid var(--linea);
-  border-bottom: 1px solid var(--linea);
-}
-
-.buenos-aires h3 {
-  margin: 0 0 10px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-}
-
-.buenos-aires p {
-  max-width: 550px;
-  color: #555;
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  padding: 14px 0 0;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
-
-@media (max-width: 800px) {
-  .hero-copy { padding: 20px 15px 17px 18px; }
-  .hero-header { flex-direction: column; font-size: 9px; }
-  .hero-meta { text-align: left; }
-  .hero h1 { font-size: clamp(37px, 8vw, 60px); }
-  .hero-description { font-size: 11px; }
-  .research { padding: 28px 16px; }
-  .research-info { grid-template-columns: 1fr; }
-  .controls { grid-template-columns: repeat(3,minmax(0,1fr)); }
-  .lane { min-height: 270px; }
-  .spheres { min-height: 190px; }
-  .sphere { flex-basis: 29px; width: 29px; height: 29px; }
-  .board-bottom { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 520px) {
-  .hero { min-height: 90vh; }
-  .hero-copy { padding: 15px 10px 14px 14px; }
-  .hero-header { font-size: 8px; gap: 8px; }
-  .hero h1 { font-size: clamp(32px, 8vw, 44px); }
-  .kicker { font-size: 8px; padding: 5px; }
-  .hero-description { font-size: 10px; margin-top: 17px; }
-  .hero-note { font-size: 9px; }
-  .hero-footer { font-size: 7px; }
-  .section-top { display: block; }
-  .section-top p { margin-top: 15px; }
-  .controls { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 10px; }
-  .board-wrap { padding: 8px 5px 0; }
-  .street-heading { padding: 9px 2px; }
-  .street-name { font-size: 12px; }
-  .lane { min-height: 210px; }
-  .spheres { min-height: 150px; padding: 4px 0; }
-  .sphere { flex-basis: 21px; width: 21px; height: 21px; margin: 0 -2px -2px; }
-  .side-label, .side-count { font-size: 8px; }
-  .board-bottom { padding: 12px 5px; gap: 15px; }
-  .board-legend { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .legend-tile p { font-size: 8px; }
-  .buenos-aires { grid-template-columns: 1fr; }
-  footer { flex-direction: column; }
-}
+:root{--azul:#0875ff;--verde:#00c878;--amarillo:#ffd000;--rojo:#ed382b;--negro:#171717;--linea:rgba(23,23,23,.3)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--negro);font-family:Helvetica,Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hero{position:relative;display:grid;grid-template-columns:1fr 1fr;min-height:90vh;overflow:hidden;background:white}
+.hero-copy{position:relative;z-index:2;display:flex;flex-direction:column;min-width:0;padding:25px 30px 22px 34px;pointer-events:none}
+.hero-header{display:flex;justify-content:space-between;gap:15px;padding-bottom:14px;border-bottom:1px solid var(--linea);font-size:11px;line-height:1.5}
+.hero-meta{text-align:right}
+.hero-content{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.kicker{margin-bottom:22px;padding:7px 10px;border:1px solid var(--azul);color:var(--azul);font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.hero h1{margin:0;font-size:clamp(43px,7vw,100px);letter-spacing:-.085em;line-height:.9}
+.hero h1 span{color:var(--azul)}
+.hero-description{max-width:340px;margin-top:28px;font-size:13px;line-height:1.65}
+.hero-note{margin-top:24px;color:#555;font-size:10px;line-height:1.7}
+.hero-footer{padding-top:13px;border-top:1px solid var(--linea);font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+.hero-divider{position:absolute;z-index:3;top:0;bottom:0;left:50%;width:1px;background:rgba(23,23,23,.45)}
+#rain{position:absolute;inset:0 0 0 50%;overflow:hidden;pointer-events:none}
+#rain canvas{display:block;mix-blend-mode:multiply}
+main{padding:35px 30px 30px}
+.section-top{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;padding-bottom:22px;border-bottom:1px solid var(--linea)}
+.section-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--azul)}
+.section-top h2{margin:10px 0 0;font-size:clamp(30px,5vw,58px);letter-spacing:-.065em;line-height:.95}
+.section-top p{max-width:420px;font-size:12px;line-height:1.65;color:#555}
+.research-info{display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:24px 0 28px}
+.research-info h3{margin:0 0 12px;font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase}
+.research-question{margin:0 0 12px;font-size:clamp(23px,3vw,36px);letter-spacing:-.04em;line-height:1.08}
+.body-copy{max-width:620px;margin:0;color:#555;font-size:12px;line-height:1.7}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+.legend-item{display:flex;gap:10px;align-items:flex-start}
+.legend-dot{width:23px;height:23px;flex:0 0 23px;clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.85}
+.blue{background:var(--azul)}
+.green{background:var(--verde)}
+.yellow{background:var(--amarillo)}
+.red{background:var(--rojo)}
+.legend-item strong{display:block;margin-bottom:4px;font-size:11px}
+.legend-item small{display:block;color:#555;font-size:10px;line-height:1.45}
+.login-panel{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:0 0 20px;padding:16px;border:1px solid var(--linea)}
+.login-panel h3{width:100%;margin:0;font-size:13px}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1}
+.field label{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#555}
+.field input,.field select{min-width:0;width:100%;min-height:37px;padding:7px;border:1px solid var(--linea);border-radius:0;background:white;color:var(--negro);font-size:11px}
+.login-status{width:100%;font-size:11px;line-height:1.5;color:#555}
+.controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:6px 0 20px;padding:15px;border:1px solid var(--linea)}
+.controls[hidden]{display:none}
+.actions{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1}
+.btn{padding:10px 13px;border:1px solid var(--negro);background:var(--negro);color:white;font-size:10px}
+.btn:hover{background:white;color:var(--negro)}
+.btn-light{background:white;color:var(--negro)}
+.btn-danger{background:white;color:#b32636;border-color:#b32636}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.summary{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--linea);font-size:10px}
+.summary span:last-child{color:#666}
+.board-wrap{position:relative;margin-top:12px;padding:12px 12px 0;border:1px solid #777;background:#ededed;box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
+.board-wrap::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px;background:linear-gradient(135deg,#aaa 0 5%,#f5f5f5 5% 20%,#d0d0d0 20% 25%,#f5f5f5 25% 40%,#aaa 40% 45%,#f5f5f5 45% 60%,#d0d0d0 60% 65%,#f5f5f5 65% 80%,#aaa 80% 85%,#f5f5f5 85%);border:1px solid #aaa;border-bottom:0}
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #aaa;border-bottom:0;background:#f4f4f4}
+.street{min-width:0;border-right:1px solid #222}
+.street:last-child{border-right:0}
+.street-heading{padding:12px 8px 9px;background:rgba(255,255,255,.6);text-align:center;border-bottom:1px solid #aaa}
+.street-number{display:block;margin-bottom:4px;color:#777;font-size:8px;letter-spacing:.1em}
+.street-name{font-size:clamp(13px,1.5vw,18px);font-weight:700}
+.lane{display:grid;grid-template-columns:1fr 1fr;min-height:345px}
+.side{position:relative;display:flex;flex-direction:column;min-width:0;background:#ededed}
+.side+.side{border-left:1px solid #aaa}
+.side-label{padding:8px 2px;text-align:center;font-size:10px;font-weight:700;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.12)}
+.side-count{padding:5px 2px;text-align:center;font-size:9px;color:#666}
+.spheres{flex:1;min-height:250px;display:flex;flex-wrap:wrap-reverse;align-content:flex-start;align-items:flex-end;justify-content:center;gap:0;padding:5px 3px 8px;overflow:hidden}
+.sphere{position:relative;flex:0 0 39px;width:39px;height:39px;margin:0 -3px -3px;clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.8;mix-blend-mode:multiply;border:none;transform:rotate(var(--giro,0deg))}
+.sphere.blue{background:rgba(8,117,255,.83)}
+.sphere.green{background:rgba(0,145,82,.83)}
+.sphere.yellow{background:rgba(255,208,0,.87)}
+.sphere.red{background:rgba(196,48,26,.82)}
+.side.empty .spheres::after{content:"Sin registros";align-self:center;margin:auto;color:#aaa;font-size:9px}
+.street-total{padding:7px;text-align:center;background:#f7f7f7;border-top:1px solid #aaa;font-size:9px;color:#555}
+.board-bottom{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;padding:18px 12px 16px;background:#d9d9d9;border:1px solid #aaa;border-top:0}
+.board-legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.legend-tile{min-width:0;text-align:center}
+.legend-tile .legend-dot{margin:0 auto 7px}
+.legend-tile strong{display:block;font-size:10px}
+.legend-tile small{display:block;margin-top:4px;font-size:9px;line-height:1.4;color:#555}
+.board-note{font-size:10px;line-height:1.7;color:#444}
+footer{display:flex;justify-content:space-between;gap:15px;padding:20px 30px;border-top:1px solid var(--linea);font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:900px){.controls{grid-template-columns:repeat(3,minmax(0,1fr))}.research-info{grid-template-columns:1fr}.section-top{align-items:flex-start;flex-direction:column}}
+@media(max-width:600px){.hero{grid-template-columns:1fr;min-height:760px}.hero-copy{padding:20px}.hero-divider{left:0;right:0;top:50%;bottom:auto;width:auto;height:1px}#rain{inset:50% 0 0}.hero h1{font-size:clamp(48px,14vw,78px)}main{padding:28px 14px}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.board-wrap{overflow-x:auto}.board{min-width:680px}.board-bottom{min-width:680px}.section-top h2{font-size:36px}.board-bottom{grid-template-columns:1fr}.hero-header{font-size:9px}footer{padding:18px 14px;flex-direction:column}.login-panel{align-items:stretch;flex-direction:column}.login-panel .field{width:100%}}
 </style>
 </head>
-
 <body>
-
 <section class="hero">
-  <div id="rain"></div>
-  <div class="hero-divider"></div>
-
-  <div class="hero-copy">
-    <header class="hero-header">
-      <div>
-        Taller de Diseño de Servicios 2026<br>
-        Escuela de Arquitectura y Diseño · PUCV
-      </div>
-      <div class="hero-meta">
-        Proyecto de levantamiento<br>
-        de información física
-      </div>
-    </header>
-
-    <div class="hero-content">
-      <div class="kicker">Observación · Registro de terreno</div>
-      <h1>Tramas de<br><span>elección.</span></h1>
-      <p class="hero-description">
-        Observar es atender a las relaciones, los recorridos y las
-        decisiones que construyen nuestra experiencia de los lugares.
-      </p>
-      <p class="hero-note">
-        Una lluvia de formas, encuentros y acumulaciones.
-      </p>
-    </div>
-
-    <div class="hero-footer">
-      Levantamiento físico · Valparaíso / Buenos Aires · 2026
-    </div>
-  </div>
+<div class="hero-copy">
+<div class="hero-header">
+<div>PUCV<br>Escuela de Arquitectura y Diseño</div>
+<div class="hero-meta">Taller de Diseño de Servicios<br>2026 · Investigación territorial</div>
+</div>
+<div class="hero-content">
+<div class="kicker">Levantamiento de información</div>
+<h1>Tramas<br>de <span>elección</span></h1>
+<p class="hero-description">Un registro colectivo de las percepciones que construyen la experiencia de caminar por la ciudad.</p>
+<p class="hero-note">VALPARAÍSO ↔ BUENOS AIRES<br>Calles, decisiones y experiencias urbanas.</p>
+</div>
+<div class="hero-footer">Observación · Percepción · Territorio</div>
+</div>
+<div id="rain"></div>
+<div class="hero-divider"></div>
 </section>
-
-<section class="research">
-  <div class="section-top">
-    <div>
-      <div class="section-label">01 / Pregunta de investigación</div>
-      <h2>Un recorrido,<br>cuatro posibilidades.</h2>
-    </div>
-    <p>
-      Proyecto de levantamiento de información física. Aquí se registran
-      las respuestas de las encuestas para visualizar cómo se perciben
-      distintas calles en el recorrido entre Plaza Sotomayor y Plaza Echaurren.
-    </p>
-  </div>
-
-  <div class="research-info">
-    <div>
-      <h3>La pregunta</h3>
-      <p class="research-question">
-        Desde Plaza Sotomayor, para llegar a Plaza Echaurren,
-        ¿qué camino elegirías y por qué?
-      </p>
-      <p class="body-copy">
-        Cada ficha representa una respuesta recogida en terreno. La calle
-        seleccionada se relaciona con una variable de percepción y una
-        valoración positiva o negativa. La acumulación permite comparar
-        las elecciones y hacer visibles las tendencias del levantamiento.
-      </p>
-    </div>
-
-    <div>
-      <h3>02 / Índice de variables</h3>
-      <div class="legend">
-        <div class="legend-item">
-          <span class="legend-dot blue"></span>
-          <div>
-            <strong>Seguridad percibida</strong>
-            <small>Resguardo y sensación de seguridad en el recorrido.</small>
-          </div>
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-dot yellow"></span>
-          <div>
-            <strong>Luminosidad percibida</strong>
-            <small>Luz y visibilidad que se percibe en la calle.</small>
-          </div>
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-dot red"></span>
-          <div>
-            <strong>Facilidad para caminar</strong>
-            <small>Comodidad y facilidad para desplazarse a pie.</small>
-          </div>
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-dot green"></span>
-          <div>
-            <strong>Vitalidad urbana percibida</strong>
-            <small>Actividad, presencia de personas y dinamismo del espacio.</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <h3 style="font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase">
-    03 / Registro de respuestas
-  </h3>
-
-  <section class="controls">
-    <div class="field">
-      <label for="fecha">Fecha</label>
-      <input type="date" id="fecha">
-    </div>
-
-    <div class="field">
-      <label for="lugar">Ubicación</label>
-      <select id="lugar">
-        <option value="valparaiso">Valparaíso · Barrio Puerto</option>
-        <option value="buenosaires">Buenos Aires · Por definir</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="calle">Calle</label>
-      <select id="calle">
-        <option value="Serrano">Serrano</option>
-        <option value="Cochrane">Cochrane</option>
-        <option value="Blanco">Blanco</option>
-        <option value="Errázuriz">Errázuriz</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="valoracion">Valoración</label>
-      <select id="valoracion">
-        <option value="negativo">Negativa (−)</option>
-        <option value="positivo">Positiva (+)</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="variable">Variable</label>
-      <select id="variable">
-        <option value="blue">Azul · Seguridad</option>
-        <option value="yellow">Amarillo · Luminosidad</option>
-        <option value="red">Rojo · Facilidad para caminar</option>
-        <option value="green">Verde · Vitalidad urbana</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="cantidad">Cantidad de fichas</label>
-      <input type="number" id="cantidad" value="1" min="1" max="200">
-    </div>
-
-    <div class="actions">
-      <button class="btn" id="agregar">+ Añadir fichas</button>
-      <button class="btn btn-light" id="deshacer">Deshacer último registro</button>
-      <button class="btn btn-light" id="exportar">Exportar CSV</button>
-      <button class="btn btn-danger" id="reiniciar">Reiniciar este día</button>
-    </div>
-  </section>
-
-  <div class="summary">
-    <span>Fecha: <strong id="fechaResumen"></strong></span>
-    <span>Lugar: <strong id="lugarResumen"></strong></span>
-    <span>Total de fichas: <strong id="totalResumen">0</strong></span>
-    <span id="estado">Esperando registros.</span>
-  </div>
-
-  <div class="board-wrap">
-    <div class="board" id="board"></div>
-
-    <div class="board-bottom">
-      <div class="board-legend">
-        <div class="legend-tile">
-          <div class="legend-circles">
-            <span class="sphere blue"></span>
-            <span class="sphere blue"></span>
-            <span class="sphere blue"></span>
-            <span class="sphere blue"></span>
-          </div>
-          <p>Seguridad</p>
-        </div>
-
-        <div class="legend-tile">
-          <div class="legend-circles">
-            <span class="sphere yellow"></span>
-            <span class="sphere yellow"></span>
-            <span class="sphere yellow"></span>
-            <span class="sphere yellow"></span>
-          </div>
-          <p>Luminosidad</p>
-        </div>
-
-        <div class="legend-tile">
-          <div class="legend-circles">
-            <span class="sphere red"></span>
-            <span class="sphere red"></span>
-            <span class="sphere red"></span>
-            <span class="sphere red"></span>
-          </div>
-          <p>Facilidad para caminar</p>
-        </div>
-
-        <div class="legend-tile">
-          <div class="legend-circles">
-            <span class="sphere green"></span>
-            <span class="sphere green"></span>
-            <span class="sphere green"></span>
-            <span class="sphere green"></span>
-          </div>
-          <p>Vitalidad urbana</p>
-        </div>
-      </div>
-
-      <div class="board-question">
-        <h3>¿Qué calle prefieres?</h3>
-        <ol>
-          <li>Elige una calle y piensa cómo percibes sus características.</li>
-          <li>Selecciona la variable que identifiques en ella.</li>
-          <li>Registra la ficha según tu percepción: izquierda (−), derecha (+).</li>
-        </ol>
-      </div>
-    </div>
-  </div>
-
-  <div class="board-foot">
-    <span>Izquierda: valoración negativa (−)</span>
-    <span>Derecha: valoración positiva (+)</span>
-    <span>Una ficha representa una respuesta</span>
-  </div>
-
-  <section class="buenos-aires">
-    <div>
-      <h3>04 / Continuidad territorial</h3>
-      <p>
-        Este sistema de registro también se utilizará durante el trabajo
-        de campo en Buenos Aires. Cuando se defina el lugar de observación,
-        se incorporará su identificación para registrar y comparar los
-        resultados de ambos territorios.
-      </p>
-    </div>
-
-    <div>
-      <h3>Próxima etapa</h3>
-      <p>
-        Definir el lugar de levantamiento en Buenos Aires y mantener
-        los mismos criterios de registro para facilitar la comparación
-        entre ambos puertos.
-      </p>
-    </div>
-  </section>
-
-  <footer>
-    <span>Taller de Diseño de Servicios 2026</span>
-    <span>Escuela de Arquitectura y Diseño · PUCV</span>
-    <span>Levantamiento de información física</span>
-  </footer>
+<main>
+<div class="section-top">
+<div>
+<div class="section-label">01 / Registro de campo</div>
+<h2>Una elección,<br>muchas percepciones.</h2>
+</div>
+<p>Registra las elecciones de las personas y observa cómo se acumulan las percepciones sobre distintos recorridos urbanos. Cada ficha representa una valoración y una variable de la experiencia peatonal.</p>
+</div>
+<div class="research-info">
+<div>
+<h3>Pregunta de investigación</h3>
+<p class="research-question">Desde Plaza Sotomayor, para llegar a Plaza Echaurren, ¿qué camino elegirías y por qué?</p>
+<p class="body-copy">Cada registro relaciona una calle, una valoración y una variable percibida. La acumulación de fichas permite reconocer coincidencias y diferencias entre las experiencias de las personas.</p>
+</div>
+<div>
+<h3>Variables de percepción</h3>
+<div class="legend">
+<div class="legend-item"><span class="legend-dot blue"></span><div><strong>Azul</strong><small>Seguridad percibida</small></div></div>
+<div class="legend-item"><span class="legend-dot yellow"></span><div><strong>Amarillo</strong><small>Luminosidad percibida</small></div></div>
+<div class="legend-item"><span class="legend-dot red"></span><div><strong>Rojo</strong><small>Facilidad para caminar</small></div></div>
+<div class="legend-item"><span class="legend-dot green"></span><div><strong>Verde</strong><small>Vitalidad urbana percibida</small></div></div>
+</div>
+</div>
+</div>
+<section class="login-panel" id="loginPanel">
+<h3>Acceso al registro</h3>
+<div class="field">
+<label for="email">Correo electrónico</label>
+<input id="email" type="email" autocomplete="username" placeholder="Tu correo">
+</div>
+<div class="field">
+<label for="password">Contraseña</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="Tu contraseña">
+</div>
+<button class="btn" id="loginButton" type="button">Iniciar sesión</button>
+<button class="btn btn-light" id="logoutButton" type="button" hidden>Cerrar sesión</button>
+<div class="login-status" id="loginStatus" role="status">Inicia sesión con tu cuenta autorizada para registrar o modificar fichas.</div>
 </section>
-
+<section class="controls" id="controls" hidden>
+<div class="field">
+<label for="fecha">Fecha del registro</label>
+<input id="fecha" type="date" required>
+</div>
+<div class="field">
+<label for="lugar">Ciudad</label>
+<select id="lugar">
+<option value="valparaiso">Valparaíso</option>
+<option value="buenosaires">Buenos Aires</option>
+</select>
+</div>
+<div class="field">
+<label for="calle">Calle</label>
+<select id="calle">
+<option value="Serrano">Serrano</option>
+<option value="Cochrane">Cochrane</option>
+<option value="Blanco">Blanco</option>
+<option value="Errázuriz">Errázuriz</option>
+</select>
+</div>
+<div class="field">
+<label for="valoracion">Valoración</label>
+<select id="valoracion">
+<option value="positivo">Positiva</option>
+<option value="negativo">Negativa</option>
+</select>
+</div>
+<div class="field">
+<label for="variable">Variable</label>
+<select id="variable">
+<option value="blue">Azul · Seguridad</option>
+<option value="yellow">Amarillo · Luminosidad</option>
+<option value="red">Rojo · Facilidad para caminar</option>
+<option value="green">Verde · Vitalidad urbana</option>
+</select>
+</div>
+<div class="field">
+<label for="cantidad">Cantidad de fichas</label>
+<input id="cantidad" type="number" min="1" max="200" value="1" required>
+</div>
+<div class="actions">
+<button class="btn" id="addButton" type="button">Agregar fichas</button>
+<button class="btn btn-light" id="undoButton" type="button">Deshacer último registro</button>
+<button class="btn btn-light" id="exportButton" type="button">Exportar CSV</button>
+<button class="btn btn-danger" id="resetButton" type="button">Eliminar registros del día</button>
+</div>
+</section>
+<div class="summary">
+<span id="recordSummary">Registros: cargando…</span>
+<span id="syncStatus">Conectando con la base de datos</span>
+</div>
+<div class="board-wrap">
+<div class="board" id="board"></div>
+<div class="board-bottom">
+<div class="board-legend">
+<div class="legend-tile"><span class="legend-dot blue"></span><strong>Seguridad</strong><small>Azul</small></div>
+<div class="legend-tile"><span class="legend-dot yellow"></span><strong>Luminosidad</strong><small>Amarillo</small></div>
+<div class="legend-tile"><span class="legend-dot red"></span><strong>Facilidad</strong><small>Rojo</small></div>
+<div class="legend-tile"><span class="legend-dot green"></span><strong>Vitalidad</strong><small>Verde</small></div>
+</div>
+<div class="board-note">Las fichas se acumulan según la calle, la valoración y la variable seleccionadas. Los registros se comparten con la visualización pública conectada a esta misma base de datos.</div>
+</div>
+</div>
+</main>
+<footer>
+<span>Tramas de elección · 2026</span>
+<span>Taller de Diseño de Servicios · PUCV</span>
+</footer>
 <script>
-/* LLUVIA DE PENTÁGONOS EN LA MITAD DERECHA */
-(() => {
-  if (!window.Matter) return;
-
-  const {
-    Engine, Render, Runner, Bodies, Body, Composite, Events
-  } = Matter;
-
-  const contenedor = document.getElementById("rain");
-  const colores = [
-    "rgba(255,25,60,.57)",
-    "rgba(0,100,255,.55)",
-    "rgba(255,195,0,.62)",
-    "rgba(0,210,120,.55)"
-  ];
-
-  let ancho = Math.max(1, window.innerWidth / 2);
-  let alto = window.innerHeight;
-  let piezas = [];
-  let paredes = [];
-  let ultimoLanzamiento = performance.now();
-  let indiceColor = 0;
-
-  const TAMANO = 40;
-  const MAXIMO = 204;
-
-  const motor = Engine.create({ enableSleeping: true });
-  motor.gravity.y = 1;
-  motor.gravity.scale = .001;
-  motor.positionIterations = 10;
-  motor.velocityIterations = 8;
-
-  const render = Render.create({
-    element: contenedor,
-    engine: motor,
-    options: {
-      width: ancho,
-      height: alto,
-      wireframes: false,
-      background: "transparent",
-      pixelRatio: Math.min(window.devicePixelRatio || 1, 2)
-    }
-  });
-
-  const runner = Runner.create({ delta: 1000 / 60 });
-
-  function azar(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  function crearParedes() {
-    paredes.forEach(p => Composite.remove(motor.world, p));
-
-    const g = 160;
-    paredes = [
-      Bodies.rectangle(ancho / 2, alto + g / 2, ancho + g * 2, g,
-        { isStatic: true, render: { visible: false } }),
-      Bodies.rectangle(-g / 2, alto / 2, g, alto * 3,
-        { isStatic: true, render: { visible: false } }),
-      Bodies.rectangle(ancho + g / 2, alto / 2, g, alto * 3,
-        { isStatic: true, render: { visible: false } })
-    ];
-
-    Composite.add(motor.world, paredes);
-  }
-
-  function crearPentagono() {
-    if (piezas.length >= MAXIMO) return;
-
-    const radio = 40;
-    const x = azar(radio + 5, Math.max(radio + 5, ancho - radio - 5));
-
-    const p = Bodies.polygon(x, -radio * 2 - azar(0, alto * .2), 5, 31, {
-      restitution: .005,
-      friction: .92,
-      frictionStatic: 1,
-      frictionAir: .018,
-      density: .0018,
-      slop: .01,
-      sleepThreshold: 35,
-      angle: azar(-.5, .5),
-      render: { visible: false }
-    });
-
-    p.colorPentagono = colores[indiceColor % colores.length];
-    indiceColor++;
-
-    Body.setVelocity(p, { x: azar(-.65, .65), y: azar(0, .3) });
-    Body.setAngularVelocity(p, azar(-.012, .012));
-
-    piezas.push(p);
-    Composite.add(motor.world, p);
-  }
-
-  function dibujar(ctx, p) {
-    ctx.save();
-    ctx.translate(p.position.x, p.position.y);
-    ctx.rotate(p.angle);
-    ctx.beginPath();
-
-    for (let i = 0; i < 5; i++) {
-      const a = -Math.PI / 2 + i * Math.PI * 2 / 5;
-      const x = Math.cos(a) * TAMANO;
-      const y = Math.sin(a) * TAMANO;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-
-    ctx.closePath();
-    ctx.fillStyle = p.colorPentagono;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  Events.on(render, "afterRender", () => {
-    const ctx = render.context;
-    ctx.save();
-    ctx.globalCompositeOperation = "multiply";
-    piezas.forEach(p => dibujar(ctx, p));
-    ctx.restore();
-  });
-
-  Events.on(motor, "beforeUpdate", () => {
-    const now = performance.now();
-
-    if (now - ultimoLanzamiento > 135 && piezas.length < MAXIMO) {
-      crearPentagono();
-      ultimoLanzamiento = now;
-    }
-
-    piezas.forEach(p => {
-      if (p.isSleeping) return;
-      if (p.speed < .045 && Math.abs(p.angularVelocity) < .01) {
-        Body.setVelocity(p, { x: 0, y: 0 });
-        Body.setAngularVelocity(p, 0);
-      }
-    });
-  });
-
-  Events.on(motor, "afterUpdate", () => {
-    piezas = piezas.filter(p => {
-      if (p.position.y > alto + TAMANO * 4) {
-        Composite.remove(motor.world, p);
-        return false;
-      }
-      return true;
-    });
-  });
-
-  crearParedes();
-  for (let i = 0; i < 24; i++) crearPentagono();
-
-  window.addEventListener("resize", () => {
-    ancho = Math.max(1, window.innerWidth / 2);
-    alto = window.innerHeight;
-
-    render.canvas.width = ancho * render.options.pixelRatio;
-    render.canvas.height = alto * render.options.pixelRatio;
-    render.canvas.style.width = ancho + "px";
-    render.canvas.style.height = alto + "px";
-    render.options.width = ancho;
-    render.options.height = alto;
-
-    crearParedes();
-
-    piezas.forEach(p => {
-      if (p.position.x > ancho - TAMANO) {
-        Body.setPosition(p, { x: ancho - TAMANO, y: p.position.y });
-      }
-      if (p.position.x < TAMANO) {
-        Body.setPosition(p, { x: TAMANO, y: p.position.y });
-      }
-    });
-  });
-
-  Runner.run(runner, motor);
-  Render.run(render);
-})();
-
-/* PIZARRA DE REGISTROS */
-(() => {
-  const CALLES = ["Serrano", "Cochrane", "Blanco", "Errázuriz"];
-
-  const VARIABLES = {
-    blue: "Seguridad percibida",
-    yellow: "Luminosidad percibida",
-    red: "Facilidad para caminar",
-    green: "Vitalidad urbana percibida"
-  };
-
-  const LUGARES = {
-    valparaiso: "Valparaíso · Barrio Puerto",
-    buenosaires: "Buenos Aires · Lugar por definir"
-  };
-
-  const $ = id => document.getElementById(id);
-
-  const fechaInput = $("fecha");
-  const lugarInput = $("lugar");
-  const calleInput = $("calle");
-  const valoracionInput = $("valoracion");
-  const variableInput = $("variable");
-  const cantidadInput = $("cantidad");
-  const board = $("board");
-
-  let registros = [];
-  let siguienteId = 1;
-
-  function fechaLocal() {
-    const ahora = new Date();
-    return new Date(ahora.getTime() - ahora.getTimezoneOffset() * 60000)
-      .toISOString().slice(0, 10);
-  }
-
-  fechaInput.value = fechaLocal();
-
-  function clave() {
-    return "tramas-v2-" + lugarInput.value + "-" + fechaInput.value;
-  }
-
-  function guardar() {
-    try {
-      localStorage.setItem(clave(), JSON.stringify(registros));
-      $("estado").textContent = "Guardado en este navegador.";
-    } catch {
-      $("estado").textContent = "No fue posible guardar automáticamente.";
-    }
-  }
-
-  function cargar() {
-    try {
-      registros = JSON.parse(localStorage.getItem(clave()) || "[]");
-      if (!Array.isArray(registros)) registros = [];
-    } catch {
-      registros = [];
-    }
-
-    siguienteId = registros.reduce((max, r) => Math.max(max, r.id || 0), 0) + 1;
-    dibujar();
-  }
-
-  function estructura() {
-    board.innerHTML = "";
-
-    CALLES.forEach((calle, i) => {
-      const street = document.createElement("article");
-      street.className = "street";
-      street.dataset.calle = calle;
-
-      street.innerHTML = `
-        <div class="street-heading">
-          <span class="street-number">CALLE 0${i + 1}</span>
-          <div class="street-name">${calle}</div>
-        </div>
-        <div class="lane">
-          <div class="side" data-lado="negativo">
-            <div class="side-label">(−)</div>
-            <div class="side-count">0 fichas</div>
-            <div class="spheres"></div>
-          </div>
-          <div class="side" data-lado="positivo">
-            <div class="side-label">(＋)</div>
-            <div class="side-count">0 fichas</div>
-            <div class="spheres"></div>
-          </div>
-        </div>
-        <div class="street-total">0 respuestas</div>
-      `;
-
-      board.appendChild(street);
-    });
-  }
-
-  function dibujar() {
-    estructura();
-    let totalGeneral = 0;
-
-    CALLES.forEach(calle => {
-      const street = [...board.querySelectorAll(".street")]
-        .find(el => el.dataset.calle === calle);
-
-      const delCalle = registros.filter(r => r.calle === calle);
-      const totalCalle = delCalle.reduce((s, r) => s + r.cantidad, 0);
-
-      street.querySelector(".street-total").textContent =
-        `${totalCalle} ${totalCalle === 1 ? "respuesta" : "respuestas"}`;
-
-      totalGeneral += totalCalle;
-
-      ["negativo", "positivo"].forEach(lado => {
-        const side = street.querySelector(`[data-lado="${lado}"]`);
-        const zona = side.querySelector(".spheres");
-        const grupo = delCalle.filter(r => r.valoracion === lado);
-        const cantidadLado = grupo.reduce((s, r) => s + r.cantidad, 0);
-
-        side.querySelector(".side-count").textContent =
-          `${cantidadLado} ${cantidadLado === 1 ? "ficha" : "fichas"}`;
-
-        if (!cantidadLado) side.classList.add("empty");
-
-        /*
-          El número junto al lado conserva el total exacto.
-          Limitamos las fichas dibujadas para evitar sobrecargar
-          el navegador si se registran cientos de respuestas.
-        */
-        const MAX_VISIBLES = 150;
-        let visibles = 0;
-
-        grupo.forEach(r => {
-          for (let i = 0; i < r.cantidad && visibles < MAX_VISIBLES; i++) {
-            const ficha = document.createElement("span");
-            ficha.className = `sphere ${r.variable}`;
-            ficha.style.setProperty(
-              "--giro",
-              `${((r.id * 13 + i * 17) % 17) - 8}deg`
-            );
-            ficha.title =
-              `${VARIABLES[r.variable]} · ${calle} · ${lado}`;
-            zona.appendChild(ficha);
-            visibles++;
-          }
-        });
-      });
-    });
-
-    $("fechaResumen").textContent = fechaInput.value;
-    $("lugarResumen").textContent = LUGARES[lugarInput.value];
-    $("totalResumen").textContent = totalGeneral;
-  }
-
-  $("agregar").addEventListener("click", () => {
-    const cantidad = Math.floor(Number(cantidadInput.value));
-
-    if (!Number.isFinite(cantidad) || cantidad < 1 || cantidad > 200) {
-      alert("Ingresa una cantidad entre 1 y 200 fichas.");
-      return;
-    }
-
-    registros.push({
-      id: siguienteId++,
-      fecha: fechaInput.value,
-      lugar: lugarInput.value,
-      calle: calleInput.value,
-      valoracion: valoracionInput.value,
-      variable: variableInput.value,
-      cantidad
-    });
-
-    guardar();
-    dibujar();
-
-    $("estado").textContent =
-      `Añadidas ${cantidad} fichas a ${calleInput.value}.`;
-  });
-
-  $("deshacer").addEventListener("click", () => {
-    if (!registros.length) {
-      $("estado").textContent = "No hay registros que deshacer.";
-      return;
-    }
-
-    registros.pop();
-    guardar();
-    dibujar();
-    $("estado").textContent = "Se eliminó el último registro.";
-  });
-
-  $("reiniciar").addEventListener("click", () => {
-    if (!registros.length) return;
-
-    if (!confirm("¿Eliminar todos los registros de esta fecha y ubicación?")) {
-      return;
-    }
-
-    registros = [];
-    guardar();
-    dibujar();
-    $("estado").textContent = "Se reinició la pizarra para esta fecha.";
-  });
-
-  $("exportar").addEventListener("click", () => {
-    const filas = [
-      ["Fecha", "Lugar", "Calle", "Valoración", "Variable", "Cantidad"]
-    ];
-
-    registros.forEach(r => {
-      filas.push([
-        r.fecha,
-        LUGARES[r.lugar],
-        r.calle,
-        r.valoracion,
-        VARIABLES[r.variable],
-        r.cantidad
-      ]);
-    });
-
-    const csv = filas.map(fila =>
-      fila.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(",")
-    ).join("\r\n");
-
-    const blob = new Blob(["\uFEFF" + csv], {
-      type: "text/csv;charset=utf-8;"
-    });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `levantamiento-${lugarInput.value}-${fechaInput.value}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  });
-
-  fechaInput.addEventListener("change", cargar);
-  lugarInput.addEventListener("change", cargar);
-
-  estructura();
-  cargar();
-})();
+const SUPABASE_URL="https://mbkyszjxiqxhvqdqpxzd.supabase.co/rest/v1/";
+const SUPABASE_KEY="sb_publishable_g4tlWVRipA6ByuDDBU0PQg_9PS6fvGh";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const streets=["Serrano","Cochrane","Blanco","Errázuriz"];
+const variables={blue:"Seguridad percibida",yellow:"Luminosidad percibida",red:"Facilidad para caminar",green:"Vitalidad urbana percibida"};
+let registros=[];
+let currentUser=null;
+let busy=false;
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toLocaleDateString("en-CA");
+$("fecha").value=today();
+function setStatus(message){$("loginStatus").textContent=message}
+function setSync(message){$("syncStatus").textContent=message}
+function setBusy(value){busy=value;["addButton","undoButton","exportButton","resetButton","loginButton","logoutButton"].forEach(id=>$(id).disabled=value)}
+function updateAccess(){
+$("loginPanel").querySelector("#email").disabled=!!currentUser;
+$("loginPanel").querySelector("#password").disabled=!!currentUser;
+$("loginButton").hidden=!!currentUser;
+$("logoutButton").hidden=!currentUser;
+$("controls").hidden=!currentUser;
+if(currentUser){setStatus("Sesión iniciada: "+currentUser.email)}else{setStatus("Inicia sesión con tu cuenta autorizada para registrar o modificar fichas.")}
+renderBoard();
+}
+function renderBoard(){
+const board=$("board");
+board.innerHTML="";
+streets.forEach((street,index)=>{
+const column=document.createElement("section");
+column.className="street";
+const heading=document.createElement("div");
+heading.className="street-heading";
+heading.innerHTML='<span class="street-number">CALLE 0'+(index+1)+'</span><div class="street-name"></div>';
+heading.querySelector(".street-name").textContent=street;
+column.appendChild(heading);
+const lane=document.createElement("div");
+lane.className="lane";
+["positivo","negativo"].forEach(value=>{
+const side=document.createElement("div");
+side.className="side";
+const label=document.createElement("div");
+label.className="side-label";
+label.textContent=value==="positivo"?"Positiva":"Negativa";
+const items=registros.filter(r=>r.calle===street&&r.valoracion===value&&r.lugar===$("lugar").value&&r.fecha===$("fecha").value);
+const count=document.createElement("div");
+count.className="side-count";
+const total=items.reduce((sum,r)=>sum+Number(r.cantidad||0),0);
+count.textContent=total+" ficha"+(total===1?"":"s");
+const spheres=document.createElement("div");
+spheres.className="spheres";
+if(!total)side.classList.add("empty");
+items.forEach(r=>{
+for(let i=0;i<Math.min(Number(r.cantidad)||0,200);i++){
+const sphere=document.createElement("span");
+sphere.className="sphere "+r.variable;
+sphere.style.setProperty("--giro",((i*17+Number(r.id||0)*11)%31-15)+"deg");
+sphere.title=(variables[r.variable]||r.variable)+" · "+value;
+spheres.appendChild(sphere);
+}
+});
+side.append(label,count,spheres);
+lane.appendChild(side);
+});
+column.appendChild(lane);
+const streetTotal=document.createElement("div");
+streetTotal.className="street-total";
+const count=registros.filter(r=>r.calle===street&&r.lugar===$("lugar").value&&r.fecha===$("fecha").value).reduce((sum,r)=>sum+Number(r.cantidad||0),0);
+streetTotal.textContent="Total: "+count+" fichas";
+column.appendChild(streetTotal);
+board.appendChild(column);
+});
+const filtered=registros.filter(r=>r.lugar===$("lugar").value&&r.fecha===$("fecha").value);
+const total=filtered.reduce((sum,r)=>sum+Number(r.cantidad||0),0);
+$("recordSummary").textContent=filtered.length+" registros · "+total+" fichas · "+$("fecha").value+" · "+$("lugar").selectedOptions[0].textContent;
+}
+async function loadRecords(){
+const {data,error}=await supabaseClient.from("registros").select("id,fecha,lugar,calle,valoracion,variable,cantidad,created_at").order("created_at",{ascending:true});
+if(error){setSync("Error al cargar datos: "+error.message);return}
+registros=data||[];
+renderBoard();
+setSync("Datos sincronizados con Supabase");
+}
+async function login(){
+const email=$("email").value.trim();
+const password=$("password").value;
+if(!email||!password){setStatus("Ingresa tu correo y contraseña.");return}
+setBusy(true);
+const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+setBusy(false);
+if(error){setStatus("No se pudo iniciar sesión: "+error.message);return}
+currentUser=data.user;
+updateAccess();
+await loadRecords();
+}
+async function logout(){
+setBusy(true);
+const {error}=await supabaseClient.auth.signOut();
+setBusy(false);
+if(error){setStatus("No se pudo cerrar sesión: "+error.message);return}
+currentUser=null;
+updateAccess();
+}
+async function addRecords(){
+if(!currentUser){setStatus("Inicia sesión antes de registrar.");return}
+const fecha=$("fecha").value;
+const lugar=$("lugar").value;
+const calle=$("calle").value;
+const valoracion=$("valoracion").value;
+const variable=$("variable").value;
+const cantidad=Number($("cantidad").value);
+if(!fecha||!Number.isInteger(cantidad)||cantidad<1||cantidad>200){setStatus("Revisa la fecha y la cantidad de fichas. Debe estar entre 1 y 200.");return}
+setBusy(true);
+const {error}=await supabaseClient.from("registros").insert([{fecha,lugar,calle,valoracion,variable,cantidad}]);
+setBusy(false);
+if(error){setStatus("No se pudo guardar el registro: "+error.message);return}
+setStatus("Registro guardado correctamente.");
+await loadRecords();
+}
+async function undoLast(){
+if(!currentUser){setStatus("Inicia sesión antes de modificar registros.");return}
+const {data,error:readError}=await supabaseClient.from("registros").select("id,fecha,lugar").order("created_at",{ascending:false}).limit(1);
+if(readError){setStatus("No se pudo consultar el último registro: "+readError.message);return}
+if(!data||!data.length){setStatus("No hay registros para deshacer.");return}
+const item=data[0];
+if(!confirm("¿Eliminar el registro más reciente de la base de datos?"))return;
+setBusy(true);
+const {error}=await supabaseClient.from("registros").delete().eq("id",item.id);
+setBusy(false);
+if(error){setStatus("No se pudo eliminar: "+error.message);return}
+setStatus("Último registro eliminado.");
+await loadRecords();
+}
+async function resetDay(){
+if(!currentUser){setStatus("Inicia sesión antes de modificar registros.");return}
+const fecha=$("fecha").value;
+const lugar=$("lugar").value;
+if(!confirm("¿Eliminar todos los registros de "+fecha+" en "+$("lugar").selectedOptions[0].textContent+"? Esta acción no se puede deshacer."))return;
+setBusy(true);
+const {error}=await supabaseClient.from("registros").delete().eq("fecha",fecha).eq("lugar",lugar);
+setBusy(false);
+if(error){setStatus("No se pudieron eliminar los registros: "+error.message);return}
+setStatus("Registros del día eliminados.");
+await loadRecords();
+}
+async function exportCSV(){
+if(!currentUser){setStatus("Inicia sesión para exportar los datos.");return}
+setBusy(true);
+const {data,error}=await supabaseClient.from("registros").select("id,fecha,lugar,calle,valoracion,variable,cantidad,created_at").order("created_at",{ascending:true});
+setBusy(false);
+if(error){setStatus("No se pudo exportar: "+error.message);return}
+const rows=[["id","fecha","lugar","calle","valoracion","variable","cantidad","created_at"],...(data||[]).map(r=>[r.id,r.fecha,r.lugar,r.calle,r.valoracion,r.variable,r.cantidad,r.created_at])];
+const csv=rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download="tramas-de-eleccion-"+today()+".csv";
+document.body.appendChild(a);
+a.click();
+a.remove();
+URL.revokeObjectURL(url);
+setStatus("Archivo CSV exportado.");
+}
+$("loginButton").addEventListener("click",login);
+$("logoutButton").addEventListener("click",logout);
+$("addButton").addEventListener("click",addRecords);
+$("undoButton").addEventListener("click",undoLast);
+$("resetButton").addEventListener("click",resetDay);
+$("exportButton").addEventListener("click",exportCSV);
+$("fecha").addEventListener("change",renderBoard);
+$("lugar").addEventListener("change",renderBoard);
+supabaseClient.auth.onAuthStateChange((_event,session)=>{
+currentUser=session?.user||null;
+updateAccess();
+});
+async function init(){
+if(SUPABASE_URL==="PEGA_AQUI_TU_PROJECT_URL"){setSync("Falta configurar la URL de Supabase.");return}
+const {data:{session}}=await supabaseClient.auth.getSession();
+currentUser=session?.user||null;
+updateAccess();
+await loadRecords();
+supabaseClient.channel("registros-cambios")
+.on("postgres_changes",{event:"*",schema:"public",table:"registros"},()=>loadRecords())
+.subscribe(status=>{if(status==="SUBSCRIBED")setSync("Conectado · sincronización en tiempo real")});
+}
+init();
+function startRain(){
+const container=document.getElementById("rain");
+if(!container||!window.Matter)return;
+const {Engine,Render,Runner,Bodies,Body,Composite,Events}=Matter;
+const engine=Engine.create();
+engine.gravity.y=.7;
+const render=Render.create({element:container,engine,options:{width:container.clientWidth,height:container.clientHeight,wireframes:false,background:"transparent",pixelRatio:window.devicePixelRatio||1}});
+const colors=["#0875ff","#00c878","#ffd000","#ed382b"];
+function wallBodies(){
+const w=container.clientWidth;
+const h=container.clientHeight;
+return [Bodies.rectangle(w/2,h+25,w,50,{isStatic:true,render:{visible:false}}),Bodies.rectangle(w+25,h/2,50,h,{isStatic:true,render:{visible:false}}),Bodies.rectangle(-25,h/2,50,h,{isStatic:true,render:{visible:false}})];
+}
+Composite.add(engine,wallBodies());
+function addPentagon(){
+const w=container.clientWidth;
+const body=Bodies.polygon(Math.random()*w, -35, 5, 13+Math.random()*18,{restitution:.35,friction:.4,density:.001,angle:Math.random()*Math.PI,render:{fillStyle:colors[Math.floor(Math.random()*colors.length)],opacity:.85}});
+Composite.add(engine,body);
+}
+for(let i=0;i<24;i++)addPentagon();
+Events.on(engine,"afterUpdate",()=>{
+Composite.allBodies(engine).forEach(body=>{
+if(!body.isStatic&&body.position.y>container.clientHeight+70){
+Composite.remove(engine,body);
+addPentagon();
+}
+});
+});
+Render.run(render);
+const runner=Runner.create();
+Runner.run(runner,engine);
+window.addEventListener("resize",()=>{
+const w=container.clientWidth;
+const h=container.clientHeight;
+render.canvas.width=w*(window.devicePixelRatio||1);
+render.canvas.height=h*(window.devicePixelRatio||1);
+render.options.width=w;
+render.options.height=h;
+render.bounds.max.x=w;
+render.bounds.max.y=h;
+});
+}
+startRain();
 </script>
-
 </body>
 </html>
