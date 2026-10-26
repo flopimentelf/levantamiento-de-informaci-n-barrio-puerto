@@ -249,8 +249,9 @@
       "rgba(77,166,125,0.62)"
     ];
 
-    const CANTIDAD = 170;
-    const GRAVEDAD = 0.18;
+    // 20 % más de piezas que la versión anterior.
+    const CANTIDAD = 204;
+    const GRAVEDAD = 0.16;
     const piezas = [];
 
     let ancho = 0;
@@ -269,12 +270,14 @@
         this.y = y;
         this.t = tamano;
         this.color = color;
-        this.vx = azar(-0.25, 0.25);
-        this.vy = 0;
-        this.angulo = azar(-0.12, 0.12);
-        this.giro = azar(-0.001, 0.001);
+
+        // Algunas piezas caen en diagonal y otras casi verticales.
+        this.vx = azar(-2.0, 2.0);
+        this.vy = azar(0.2, 1.1);
+
+        this.angulo = azar(-0.3, 0.3);
+        this.giro = azar(-0.009, 0.009);
         this.retraso = retraso;
-        this.edad = 0;
         this.agarrada = false;
         this.quieta = false;
         this.listo = false;
@@ -308,7 +311,6 @@
         if (tiempo < this.retraso) return;
 
         this.listo = true;
-        this.edad += dt;
 
         this.vy = Math.min(this.vy + GRAVEDAD * dt, 5.5);
 
@@ -320,12 +322,12 @@
 
         if (this.x < r) {
           this.x = r;
-          this.vx = 0;
+          this.vx = Math.abs(this.vx) * 0.5;
         }
 
         if (this.x > ancho - r) {
           this.x = ancho - r;
-          this.vx = 0;
+          this.vx = -Math.abs(this.vx) * 0.5;
         }
 
         if (this.y + r >= alto) {
@@ -367,14 +369,15 @@
       piezas.length = 0;
 
       for (let i = 0; i < CANTIDAD; i++) {
-        const t = azar(42, 68);
+        // Pentágonos un poco más grandes.
+        const t = azar(52, 82);
 
         piezas.push(new Pentagono(
           azar(t / 2, Math.max(t / 2, ancho - t / 2)),
-          azar(-alto * 2.5, -30),
+          azar(-alto * 3, -30),
           t,
           colores[Math.floor(Math.random() * colores.length)],
-          i * 28
+          i * 22
         ));
       }
     }
@@ -392,7 +395,9 @@
             const dx = b.x - a.x;
             const dy = b.y - a.y;
             const distancia = Math.hypot(dx, dy);
-            const minimo = (a.t + b.t) * 0.43;
+
+            // Separación parcial para permitir solapamientos visuales.
+            const minimo = (a.t + b.t) * 0.36;
 
             if (distancia === 0 || distancia >= minimo) continue;
 
@@ -401,8 +406,7 @@
             const penetracion = minimo - distancia;
 
             if (a.agarrada) {
-              if (!b.agarrada) {
-                b.reactivar();
+              if (!b.agarrada && !b.quieta) {
                 b.x += nx * penetracion;
                 b.y += ny * penetracion;
                 b.vx += nx * 0.3;
@@ -412,11 +416,12 @@
             }
 
             if (b.agarrada) {
-              a.reactivar();
-              a.x -= nx * penetracion;
-              a.y -= ny * penetracion;
-              a.vx -= nx * 0.3;
-              a.vy -= ny * 0.3;
+              if (!a.quieta) {
+                a.x -= nx * penetracion;
+                a.y -= ny * penetracion;
+                a.vx -= nx * 0.3;
+                a.vy -= ny * 0.3;
+              }
               continue;
             }
 
@@ -435,23 +440,35 @@
               b.y += ny * penetracion * 0.5;
             }
 
+            // Reducir las vibraciones después del contacto.
             if (!a.quieta) {
-              a.vx *= 0.35;
-              if (Math.abs(a.vx) < 0.18) a.vx = 0;
+              a.vx *= 0.65;
+              if (Math.abs(a.vx) < 0.12) a.vx = 0;
             }
 
             if (!b.quieta) {
-              b.vx *= 0.35;
-              if (Math.abs(b.vx) < 0.18) b.vx = 0;
+              b.vx *= 0.65;
+              if (Math.abs(b.vx) < 0.12) b.vx = 0;
             }
 
-            if (Math.abs(dx) < minimo * 0.72) {
+            // Asentamiento al caer sobre otra pieza.
+            if (Math.abs(dx) < minimo * 0.8) {
               if (dy > 0 && a.vy >= b.vy && !a.quieta) {
                 a.y = b.y - minimo;
-                a.detener();
+
+                if (a.vy < 1.8) {
+                  a.detener();
+                } else {
+                  a.vy *= 0.25;
+                }
               } else if (dy < 0 && b.vy >= a.vy && !b.quieta) {
                 b.y = a.y - minimo;
-                b.detener();
+
+                if (b.vy < 1.8) {
+                  b.detener();
+                } else {
+                  b.vy *= 0.25;
+                }
               }
             }
           }
@@ -542,11 +559,16 @@
 
       const p = posicion(evento);
 
-      arrastrada.vx = limitar((p.x - punteroAnterior.x) * 0.5, -10, 10);
-      arrastrada.vy = limitar((p.y - punteroAnterior.y) * 0.5, -10, 10);
+      arrastrada.vx = limitar(
+        (p.x - punteroAnterior.x) * 0.5, -10, 10
+      );
+
+      arrastrada.vy = limitar(
+        (p.y - punteroAnterior.y) * 0.5, -10, 10
+      );
+
       arrastrada.x = p.x;
       arrastrada.y = p.y;
-
       punteroAnterior = p;
     });
 
