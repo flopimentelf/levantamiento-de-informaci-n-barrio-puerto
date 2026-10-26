@@ -4,17 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
   <title>Tramas de elección</title>
 
   <style>
-    :root {
-      --rojo: 220, 66, 69;
-      --azul: 63, 132, 205;
-      --amarillo: 246, 194, 65;
-      --verde: 77, 166, 125;
-    }
-
     * {
       box-sizing: border-box;
     }
@@ -44,7 +36,12 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      pointer-events: none;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    #lluvia:active {
+      cursor: grabbing;
     }
 
     header {
@@ -52,11 +49,11 @@
       z-index: 1;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       padding: 28px 5vw;
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: .12em;
+      pointer-events: none;
     }
 
     .marca {
@@ -86,7 +83,7 @@
       margin-bottom: 24px;
       font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
+      letter-spacing: .16em;
       color: #666;
     }
 
@@ -94,15 +91,15 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: rgb(var(--verde));
+      background: #4da67d;
     }
 
     h1 {
       max-width: 760px;
       margin: 0;
       font-size: clamp(48px, 9vw, 112px);
-      line-height: 0.91;
-      letter-spacing: -0.085em;
+      line-height: .91;
+      letter-spacing: -.085em;
       font-weight: 700;
     }
 
@@ -133,13 +130,13 @@
       background: linear-gradient(
         to bottom,
         rgba(255,255,255,0),
-        rgba(255,255,255,0.8) 40%,
-        rgba(255,255,255,0.96)
+        #fff 90%
       );
       font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: .1em;
       color: #666;
+      pointer-events: none;
     }
 
     .colores {
@@ -152,68 +149,44 @@
       width: 13px;
       height: 13px;
       border-radius: 50%;
-      border: 1px solid rgba(0,0,0,0.06);
     }
 
-    .rojo { background: rgba(var(--rojo), .7); }
-    .azul { background: rgba(var(--azul), .7); }
-    .amarillo { background: rgba(var(--amarillo), .8); }
-    .verde { background: rgba(var(--verde), .7); }
+    .rojo { background: #dc4245; }
+    .azul { background: #3f84cd; }
+    .amarillo { background: #f6c241; }
+    .verde { background: #4da67d; }
 
     .reiniciar {
       pointer-events: auto;
       border: 1px solid #ddd;
-      background: rgba(255,255,255,.88);
+      background: white;
       color: #333;
       border-radius: 100px;
       padding: 11px 16px;
       font: inherit;
-      font-size: 10px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
       cursor: pointer;
-      transition: background .2s, border-color .2s;
-    }
-
-    .reiniciar:hover {
-      background: #f4f4f4;
-      border-color: #aaa;
     }
 
     @media (max-width: 600px) {
-      header {
-        padding: 22px 6vw;
-      }
+      header { padding: 22px 6vw; }
 
-      main {
-        padding: 10vh 7vw 28vh;
-      }
+      main { padding: 10vh 7vw 28vh; }
 
-      h1 {
-        font-size: clamp(48px, 14vw, 78px);
-      }
+      h1 { font-size: clamp(48px, 14vw, 78px); }
 
       .descripcion {
         max-width: 280px;
         font-size: 13px;
       }
 
-      footer {
-        padding: 20px 6vw 24px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-      }
+      footer { padding: 20px 6vw 24px; }
     }
   </style>
 </head>
 
 <body>
   <div class="pagina" id="pagina">
-    <canvas id="lluvia" aria-hidden="true"></canvas>
+    <canvas id="lluvia" aria-label="Octágonos de colores que puedes mover"></canvas>
 
     <header>
       <div class="marca">Proyecto de observación</div>
@@ -240,7 +213,7 @@
     <footer>
       <div>
         <div>Una construcción colectiva</div>
-        <div class="colores" aria-label="Paleta de cuatro colores">
+        <div class="colores">
           <span class="color rojo"></span>
           <span class="color azul"></span>
           <span class="color amarillo"></span>
@@ -249,7 +222,7 @@
       </div>
 
       <button class="reiniciar" id="reiniciar" type="button">
-        ↻ Ver de nuevo
+        ↻ Comenzar de nuevo
       </button>
     </footer>
   </div>
@@ -260,152 +233,99 @@
     const pagina = document.getElementById("pagina");
     const boton = document.getElementById("reiniciar");
 
-    const paleta = [
-      [220, 66, 69],   // Rojo
-      [63, 132, 205],  // Azul
-      [246, 194, 65],  // Amarillo
-      [77, 166, 125]   // Verde
+    const colores = [
+      "#dc4245",
+      "#3f84cd",
+      "#f6c241",
+      "#4da67d"
     ];
 
-    let ancho = 0;
-    let alto = 0;
-    let piezas = [];
-    let animacion = 0;
+    const cantidad = 320;
+    const gravedad = 0.22;
+    const piezas = [];
+
+    let ancho, alto;
     let ultimoTiempo = 0;
-    let reduccionMovimiento =
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let arrastrada = null;
+    let punteroAnterior = null;
+    let raf;
 
-    const aleatorio = (min, max) =>
-      Math.random() * (max - min) + min;
+    const azar = (min, max) => Math.random() * (max - min) + min;
 
-    class Octagono {
-      constructor(x, y, tamano, color, retraso = 0) {
+    class Pieza {
+      constructor(x, y, tamano, color, velocidadInicial = 0) {
         this.x = x;
         this.y = y;
-        this.tamano = tamano;
+        this.t = tamano;
         this.color = color;
-        this.rotacion = aleatorio(0, Math.PI / 4);
-        this.vx = aleatorio(-0.7, 0.7);
-        this.vy = aleatorio(0.5, 2);
-        this.retraso = retraso;
-        this.edad = 0;
-        this.opacidad = aleatorio(0.32, 0.57);
-        this.asentado = false;
+        this.vx = azar(-1.8, 1.8);
+        this.vy = velocidadInicial || azar(-1, 2);
+        this.angulo = azar(0, Math.PI / 4);
+        this.giro = azar(-0.035, 0.035);
+        this.agarrada = false;
+        this.detenida = false;
       }
 
       dibujar() {
-        const radio = this.tamano / 2;
-        const lados = 8;
-        const recorte = Math.cos(Math.PI / 8);
+        const radio = this.t / 2;
 
         ctx.save();
         ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotacion);
-
+        ctx.rotate(this.angulo);
         ctx.beginPath();
 
-        for (let i = 0; i < lados; i++) {
-          const angulo =
-            (Math.PI * 2 * i) / lados - Math.PI / 8;
+        // Octágono regular, sin contornos ni efectos.
+        for (let i = 0; i < 8; i++) {
+          const a = (Math.PI * 2 * i / 8) - Math.PI / 8;
+          const x = Math.cos(a) * radio;
+          const y = Math.sin(a) * radio;
 
-          const px = Math.cos(angulo) * radio;
-          const py = Math.sin(angulo) * radio;
-
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
         }
 
         ctx.closePath();
-
-        ctx.fillStyle =
-          `rgba(${this.color.join(",")},${this.opacidad})`;
+        ctx.fillStyle = this.color;
         ctx.fill();
-
-        ctx.lineWidth = 1;
-        ctx.strokeStyle =
-          `rgba(${this.color.join(",")},0.5)`;
-        ctx.stroke();
-
-        // Una cara sutil para dar profundidad.
-        ctx.beginPath();
-        ctx.moveTo(-radio * 0.55, -radio * 0.55);
-        ctx.lineTo(radio * 0.55, -radio * 0.55);
-        ctx.lineTo(radio * 0.8, -radio * 0.1);
-        ctx.strokeStyle = "rgba(255,255,255,0.38)";
-        ctx.stroke();
-
         ctx.restore();
       }
 
-      actualizar(dt, tiempo) {
-        if (this.asentado) return;
-        if (tiempo < this.retraso) return;
+      actualizar(dt) {
+        if (this.agarrada) return;
 
-        this.edad += dt;
-
-        // Gravedad.
-        this.vy += 0.12 * dt;
-        this.vy = Math.min(this.vy, 7);
+        this.vy += gravedad * dt;
+        this.vy = Math.min(this.vy, 10);
 
         this.x += this.vx * dt;
         this.y += this.vy * dt;
+        this.angulo += this.giro * dt;
 
-        // Leve giro durante la caída.
-        this.rotacion += this.vx * 0.008 * dt;
+        const r = this.t * 0.42;
 
-        const radio = this.tamano / 2;
-        const base = alto - radio - 4;
-
-        // Rebote muy pequeño al tocar el suelo.
-        if (this.y >= base) {
-          this.y = base;
-          this.vy = 0;
-          this.vx *= 0.3;
-          this.asentado = true;
+        // Límites laterales.
+        if (this.x < r) {
+          this.x = r;
+          this.vx = Math.abs(this.vx) * 0.55;
         }
 
-        // Colisión circular aproximada entre piezas.
-        // Permite apilar, trabar y superponer octágonos.
-        for (const otra of piezas) {
-          if (otra === this || !otra.asentado) continue;
-
-          const dx = this.x - otra.x;
-          const dy = this.y - otra.y;
-          const distancia = Math.hypot(dx, dy);
-          const limite = (this.tamano + otra.tamano) * 0.43;
-
-          if (distancia < limite && distancia > 0) {
-            const solapamiento = limite - distancia;
-
-            this.y -= solapamiento * 0.82;
-            this.x += (dx / distancia) * solapamiento * 0.22;
-
-            // Una vez apoyada sobre otra pieza, se detiene.
-            if (this.y < otra.y && this.vy > 0) {
-              this.vy *= 0.1;
-
-              if (this.vy < 0.35) {
-                this.vy = 0;
-                this.asentado = true;
-              }
-            }
-          }
+        if (this.x > ancho - r) {
+          this.x = ancho - r;
+          this.vx = -Math.abs(this.vx) * 0.55;
         }
 
-        // Mantener las piezas dentro del área visible.
-        if (this.x < radio) {
-          this.x = radio;
-          this.vx *= -0.4;
-        }
+        // Suelo.
+        if (this.y + r >= alto) {
+          this.y = alto - r;
+          this.vy *= -0.12;
 
-        if (this.x > ancho - radio) {
-          this.x = ancho - radio;
-          this.vx *= -0.4;
+          if (Math.abs(this.vy) < 0.7) this.vy = 0;
+
+          this.vx *= 0.985;
         }
       }
     }
 
-    function ajustarCanvas() {
+    function ajustar() {
       const rect = pagina.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -420,73 +340,159 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    function crearLluvia() {
-      piezas = [];
-
-      const cantidad = Math.min(
-        115,
-        Math.max(42, Math.floor(ancho / 7))
-      );
+    function crearPiezas() {
+      piezas.length = 0;
 
       for (let i = 0; i < cantidad; i++) {
-        const tamano = aleatorio(22, 48);
-        const x = aleatorio(tamano, ancho - tamano);
-        const y = aleatorio(-alto * 0.9, -35);
-        const color = paleta[
-          Math.floor(Math.random() * paleta.length)
-        ];
+        const t = azar(20, 43);
 
-        piezas.push(
-          new Octagono(
-            x,
-            y,
-            tamano,
-            color,
-            reduccionMovimiento ? 0 : i * 32
-          )
-        );
+        piezas.push(new Pieza(
+          azar(t, Math.max(t, ancho - t)),
+          azar(-alto * 3, -20),
+          t,
+          colores[Math.floor(Math.random() * colores.length)],
+          azar(0, 2)
+        ));
       }
+    }
 
-      if (reduccionMovimiento) {
-        piezas.forEach((pieza, i) => {
-          pieza.y = alto * 0.48 + (i % 7) * 38;
-          pieza.x = (i / piezas.length) * ancho;
-          pieza.asentado = true;
-          pieza.vy = 0;
-        });
+    // Colisiones aproximadas para que las piezas se empujen.
+    function resolverColisiones() {
+      for (let i = 0; i < piezas.length; i++) {
+        const a = piezas[i];
+
+        for (let j = i + 1; j < piezas.length; j++) {
+          const b = piezas[j];
+
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const distancia = Math.hypot(dx, dy);
+          const minimo = (a.t + b.t) * 0.39;
+
+          if (distancia === 0 || distancia >= minimo) continue;
+
+          const nx = dx / distancia;
+          const ny = dy / distancia;
+          const solapamiento = minimo - distancia;
+
+          if (!a.agarrada && !b.agarrada) {
+            a.x -= nx * solapamiento * 0.5;
+            a.y -= ny * solapamiento * 0.5;
+            b.x += nx * solapamiento * 0.5;
+            b.y += ny * solapamiento * 0.5;
+
+            const relativa =
+              (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+
+            if (relativa < 0) {
+              const impulso = relativa * 0.36;
+              a.vx += impulso * nx;
+              a.vy += impulso * ny;
+              b.vx -= impulso * nx;
+              b.vy -= impulso * ny;
+            }
+          } else {
+            const libre = a.agarrada ? b : a;
+            const fija = a.agarrada ? a : b;
+            const signo = a.agarrada ? 1 : -1;
+
+            libre.x += nx * solapamiento * signo;
+            libre.y += ny * solapamiento * signo;
+            libre.vx += nx * signo * 0.5;
+            libre.vy += ny * signo * 0.5;
+          }
+        }
       }
     }
 
     function dibujar(tiempo) {
-      const dt = Math.min(
-        (tiempo - (ultimoTiempo || tiempo)) / 16.67,
-        2
-      );
+      const dt = Math.min((tiempo - (ultimoTiempo || tiempo)) / 16.67, 1.5);
       ultimoTiempo = tiempo;
 
       ctx.clearRect(0, 0, ancho, alto);
 
-      for (const pieza of piezas) {
-        pieza.actualizar(dt, tiempo);
-        pieza.dibujar();
-      }
+      for (const pieza of piezas) pieza.actualizar(dt);
 
-      animacion = requestAnimationFrame(dibujar);
+      resolverColisiones();
+
+      for (const pieza of piezas) pieza.dibujar();
+
+      raf = requestAnimationFrame(dibujar);
     }
 
     function iniciar() {
-      cancelAnimationFrame(animacion);
+      cancelAnimationFrame(raf);
       ultimoTiempo = 0;
-      ajustarCanvas();
-      crearLluvia();
-      animacion = requestAnimationFrame(dibujar);
+      arrastrada = null;
+      punteroAnterior = null;
+      ajustar();
+      crearPiezas();
+      raf = requestAnimationFrame(dibujar);
     }
 
+    function posicion(evento) {
+      const rect = canvas.getBoundingClientRect();
+
+      return {
+        x: evento.clientX - rect.left,
+        y: evento.clientY - rect.top
+      };
+    }
+
+    canvas.addEventListener("pointerdown", evento => {
+      const p = posicion(evento);
+
+      // Elegir la pieza visible más cercana al cursor.
+      for (let i = piezas.length - 1; i >= 0; i--) {
+        const pieza = piezas[i];
+        const distancia = Math.hypot(p.x - pieza.x, p.y - pieza.y);
+
+        if (distancia <= pieza.t * 0.75) {
+          arrastrada = pieza;
+          pieza.agarrada = true;
+          pieza.vx = 0;
+          pieza.vy = 0;
+          punteroAnterior = p;
+
+          // Llevar la pieza seleccionada al frente.
+          piezas.splice(i, 1);
+          piezas.push(pieza);
+
+          canvas.setPointerCapture(evento.pointerId);
+          evento.preventDefault();
+          break;
+        }
+      }
+    });
+
+    canvas.addEventListener("pointermove", evento => {
+      const p = posicion(evento);
+
+      if (arrastrada && punteroAnterior) {
+        arrastrada.vx = (p.x - punteroAnterior.x) * 0.8;
+        arrastrada.vy = (p.y - punteroAnterior.y) * 0.8;
+        arrastrada.x = p.x;
+        arrastrada.y = p.y;
+        punteroAnterior = p;
+      }
+    });
+
+    function soltar() {
+      if (arrastrada) {
+        arrastrada.agarrada = false;
+        arrastrada.vx = Math.max(-16, Math.min(16, arrastrada.vx));
+        arrastrada.vy = Math.max(-16, Math.min(16, arrastrada.vy));
+      }
+
+      arrastrada = null;
+      punteroAnterior = null;
+    }
+
+    canvas.addEventListener("pointerup", soltar);
+    canvas.addEventListener("pointercancel", soltar);
     boton.addEventListener("click", iniciar);
 
-    window.addEventListener("resize", () => {
-      ajustarCanvas();
-    });
+    window.addEventListener("resize", ajustar);
 
     iniciar();
   </script>
