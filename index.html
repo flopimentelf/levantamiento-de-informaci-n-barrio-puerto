@@ -250,8 +250,7 @@
     ];
 
     const CANTIDAD = 220;
-    const GRAVEDAD = 0.24;
-    const FRICCION = 0.985;
+    const GRAVEDAD = 0.22;
     const piezas = [];
 
     let ancho = 0;
@@ -270,12 +269,13 @@
         this.y = y;
         this.t = tamano;
         this.color = color;
-        this.vx = azar(-1.1, 1.1);
-        this.vy = azar(0.5, 2.5);
+        this.vx = azar(-0.5, 0.5);
+        this.vy = azar(0.5, 2);
         this.angulo = azar(0, Math.PI / 4);
-        this.giro = azar(-0.008, 0.008);
+        this.giro = azar(-0.004, 0.004);
         this.agarrada = false;
         this.quieta = false;
+        this.apoyado = false;
       }
 
       dibujar() {
@@ -304,8 +304,9 @@
       actualizar(dt) {
         if (this.agarrada || this.quieta) return;
 
+        this.apoyado = false;
         this.vy += GRAVEDAD * dt;
-        this.vy = Math.min(this.vy, 9);
+        this.vy = Math.min(this.vy, 8);
 
         this.x += this.vx * dt;
         this.y += this.vy * dt;
@@ -315,27 +316,33 @@
 
         if (this.x - r < 0) {
           this.x = r;
-          this.vx = Math.abs(this.vx) * 0.3;
+          this.vx = 0;
         }
 
         if (this.x + r > ancho) {
           this.x = ancho - r;
-          this.vx = -Math.abs(this.vx) * 0.3;
+          this.vx = 0;
         }
 
         if (this.y + r >= alto) {
           this.y = alto - r;
-          this.vy = 0;
-          this.vx *= FRICCION;
-          this.giro *= 0.8;
-
-          if (Math.abs(this.vx) < 0.12) this.vx = 0;
-          if (Math.abs(this.giro) < 0.001) this.giro = 0;
-
-          if (this.vx === 0 && this.vy === 0 && this.giro === 0) {
-            this.quieta = true;
-          }
+          this.detener();
         }
+      }
+
+      detener() {
+        this.vx = 0;
+        this.vy = 0;
+        this.giro = 0;
+        this.quieta = true;
+        this.apoyado = true;
+      }
+
+      reactivar() {
+        this.quieta = false;
+        this.apoyado = false;
+        this.vx = 0;
+        this.vy = 0;
       }
     }
 
@@ -369,106 +376,96 @@
       }
     }
 
-    // Las piezas se empujan y se apoyan unas sobre otras.
-    // Cuando una pieza se estabiliza, queda inmóvil.
     function resolverColisiones() {
-      for (let i = 0; i < piezas.length; i++) {
-        const a = piezas[i];
+      // Repetir las comprobaciones para encontrar apoyos estables.
+      for (let pasada = 0; pasada < 3; pasada++) {
+        for (let i = 0; i < piezas.length; i++) {
+          const a = piezas[i];
 
-        for (let j = i + 1; j < piezas.length; j++) {
-          const b = piezas[j];
+          for (let j = i + 1; j < piezas.length; j++) {
+            const b = piezas[j];
 
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const distancia = Math.hypot(dx, dy);
-          const minimo = (a.t + b.t) * 0.43;
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const distancia = Math.hypot(dx, dy);
+            const minimo = (a.t + b.t) * 0.43;
 
-          if (distancia === 0 || distancia >= minimo) continue;
+            if (distancia === 0 || distancia >= minimo) continue;
+            if (a.quieta && b.quieta) continue;
 
-          const nx = dx / distancia;
-          const ny = dy / distancia;
-          const penetracion = minimo - distancia;
+            const nx = dx / distancia;
+            const ny = dy / distancia;
+            const penetracion = minimo - distancia;
 
-          if (a.agarrada && b.agarrada) continue;
-
-          if (a.agarrada) {
-            b.x += nx * penetracion;
-            b.y += ny * penetracion;
-            b.quieta = false;
-            b.vx += nx * 0.4;
-            b.vy += ny * 0.4;
-            continue;
-          }
-
-          if (b.agarrada) {
-            a.x -= nx * penetracion;
-            a.y -= ny * penetracion;
-            a.quieta = false;
-            a.vx -= nx * 0.4;
-            a.vy -= ny * 0.4;
-            continue;
-          }
-
-          // Separar las piezas que se solapan.
-          const total = a.quieta && b.quieta ? 0 : 1;
-
-          if (total === 0) continue;
-
-          if (a.quieta) {
-            b.x += nx * penetracion;
-            b.y += ny * penetracion;
-          } else if (b.quieta) {
-            a.x -= nx * penetracion;
-            a.y -= ny * penetracion;
-          } else {
-            a.x -= nx * penetracion * 0.5;
-            a.y -= ny * penetracion * 0.5;
-            b.x += nx * penetracion * 0.5;
-            b.y += ny * penetracion * 0.5;
-          }
-
-          // Amortiguar el movimiento cuando chocan.
-          const relativa = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
-
-          if (relativa < 0) {
-            const impulso = relativa * 0.35;
-
-            if (!a.quieta) {
-              a.vx += impulso * nx;
-              a.vy += impulso * ny;
+            if (a.agarrada) {
+              b.reactivar();
+              b.x += nx * penetracion;
+              b.y += ny * penetracion;
+              b.vx += nx * 0.4;
+              b.vy += ny * 0.4;
+              continue;
             }
 
-            if (!b.quieta) {
-              b.vx -= impulso * nx;
-              b.vy -= impulso * ny;
+            if (b.agarrada) {
+              a.reactivar();
+              a.x -= nx * penetracion;
+              a.y -= ny * penetracion;
+              a.vx -= nx * 0.4;
+              a.vy -= ny * 0.4;
+              continue;
+            }
+
+            if (a.quieta) {
+              b.x += nx * penetracion;
+              b.y += ny * penetracion;
+            } else if (b.quieta) {
+              a.x -= nx * penetracion;
+              a.y -= ny * penetracion;
+            } else {
+              a.x -= nx * penetracion * 0.5;
+              a.y -= ny * penetracion * 0.5;
+              b.x += nx * penetracion * 0.5;
+              b.y += ny * penetracion * 0.5;
+            }
+
+            // Si una pieza llega sobre otra, la inmoviliza
+            // cuando su velocidad de caída ya es pequeña.
+            if (dy > 0 && Math.abs(dx) < minimo * 0.72) {
+              if (!a.quieta && a.vy >= b.vy) {
+                a.y = b.y - minimo;
+
+                if (a.vy < 2.2) {
+                  a.detener();
+                } else {
+                  a.vy = Math.min(a.vy, 1.5);
+                  a.vx *= 0.25;
+                }
+              }
+            } else if (dy < 0 && Math.abs(dx) < minimo * 0.72) {
+              if (!b.quieta && b.vy >= a.vy) {
+                b.y = a.y - minimo;
+
+                if (b.vy < 2.2) {
+                  b.detener();
+                } else {
+                  b.vy = Math.min(b.vy, 1.5);
+                  b.vx *= 0.25;
+                }
+              }
             }
           }
+        }
+      }
 
-          // Si una pieza se apoya encima de otra, puede asentarse.
-          if (dy > 0 && Math.abs(dx) < minimo * 0.7 && a.vy >= b.vy) {
-            a.y = b.y - minimo;
-            a.vy = 0;
-            a.vx *= 0.6;
-          } else if (dy < 0 && Math.abs(dx) < minimo * 0.7 && b.vy >= a.vy) {
-            b.y = a.y - minimo;
-            b.vy = 0;
-            b.vx *= 0.6;
-          }
+      // Suprimir cualquier movimiento residual.
+      for (const p of piezas) {
+        if (p.agarrada || p.quieta) continue;
 
-          // Congelar piezas cuando ya no tienen movimiento apreciable.
-          for (const p of [a, b]) {
-            if (
-              !p.agarrada &&
-              Math.abs(p.vx) < 0.08 &&
-              Math.abs(p.vy) < 0.12 &&
-              Math.abs(p.giro) < 0.001
-            ) {
-              p.vx = 0;
-              p.vy = 0;
-              p.giro = 0;
-              p.quieta = true;
-            }
-          }
+        const r = p.t * 0.46;
+
+        if (p.y + r >= alto - 0.5) {
+          p.y = alto - r;
+          p.detener();
         }
       }
     }
@@ -526,9 +523,7 @@
         if (distancia <= pieza.t * 0.65) {
           arrastrada = pieza;
           pieza.agarrada = true;
-          pieza.quieta = false;
-          pieza.vx = 0;
-          pieza.vy = 0;
+          pieza.reactivar();
           punteroAnterior = p;
 
           piezas.splice(i, 1);
@@ -546,11 +541,16 @@
 
       const p = posicion(evento);
 
-      arrastrada.vx = limitar((p.x - punteroAnterior.x) * 0.7, -14, 14);
-      arrastrada.vy = limitar((p.y - punteroAnterior.y) * 0.7, -14, 14);
+      arrastrada.vx = limitar(
+        (p.x - punteroAnterior.x) * 0.7, -14, 14
+      );
+
+      arrastrada.vy = limitar(
+        (p.y - punteroAnterior.y) * 0.7, -14, 14
+      );
+
       arrastrada.x = p.x;
       arrastrada.y = p.y;
-
       punteroAnterior = p;
     });
 
@@ -559,7 +559,6 @@
 
       arrastrada.agarrada = false;
       arrastrada.quieta = false;
-
       arrastrada.vx = limitar(arrastrada.vx, -14, 14);
       arrastrada.vy = limitar(arrastrada.vy, -14, 14);
 
@@ -569,15 +568,17 @@
 
     canvas.addEventListener("pointerup", soltar);
     canvas.addEventListener("pointercancel", soltar);
-
     boton.addEventListener("click", iniciar);
 
     window.addEventListener("resize", () => {
       ajustarCanvas();
 
       for (const pieza of piezas) {
-        pieza.x = limitar(pieza.x, pieza.t / 2, ancho - pieza.t / 2);
-        pieza.quieta = false;
+        pieza.x = limitar(
+          pieza.x,
+          pieza.t / 2,
+          ancho - pieza.t / 2
+        );
       }
     });
 
