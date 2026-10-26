@@ -4,585 +4,575 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tramas de elección</title>
+  <meta name="theme-color" content="#f7f7f5">
+  <meta name="description" content="Portafolio académico de Florencia Pimentel, estudiante de la Escuela de Arquitectura y Diseño de la PUCV.">
+  <title>Florencia Pimentel | Portafolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --paper: #f7f7f5;
+      --white: #ffffff;
+      --ink: #171717;
+      --muted: #666762;
+      --blue: #1749c5;
+      --line: #d9d9d5;
+      --page-width: 1240px;
+    }
+
     * {
       box-sizing: border-box;
     }
 
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background: #fff;
-      color: #202020;
-      font-family: Helvetica, Arial, sans-serif;
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
     }
 
     body {
-      overflow-x: hidden;
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Montserrat", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
-    .pagina {
-      position: relative;
-      min-height: 100svh;
-      overflow: hidden;
-      isolation: isolate;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    #lluvia {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      touch-action: none;
-      cursor: grab;
+    a:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 5px;
     }
 
-    #lluvia:active {
-      cursor: grabbing;
+    .page {
+      width: min(calc(100% - 64px), var(--page-width));
+      margin-inline: auto;
     }
 
-    header {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: space-between;
-      padding: 28px 5vw;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      pointer-events: none;
-    }
-
-    .marca {
-      font-weight: 700;
-    }
-
-    .numero {
-      color: #777;
-    }
-
-    main {
-      position: relative;
-      z-index: 2;
-      min-height: 75svh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 8vh 10vw 24vh;
-      pointer-events: none;
-    }
-
-    .etiqueta {
+    .topbar {
+      min-height: 76px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .16em;
-      color: #666;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
     }
 
-    .punto {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #4da67d;
+    .wordmark {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      text-transform: uppercase;
+    }
+
+    .topbar-meta {
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      min-height: 620px;
+      padding-block: 92px 76px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.65fr);
+      gap: 64px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 28px;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1.6;
+      text-transform: uppercase;
     }
 
     h1 {
-      max-width: 760px;
+      max-width: 820px;
       margin: 0;
-      font-size: clamp(48px, 9vw, 112px);
-      line-height: .91;
-      letter-spacing: -.085em;
+      font-size: clamp(3.4rem, 8.5vw, 7.8rem);
       font-weight: 700;
+      letter-spacing: -0.095em;
+      line-height: 0.96;
     }
 
     h1 span {
       display: block;
-      color: #999;
-      font-weight: 400;
+      color: var(--blue);
     }
 
-    .descripcion {
-      max-width: 340px;
-      margin-top: 28px;
+    .hero-side {
+      padding-bottom: 8px;
+    }
+
+    .hero-side p {
+      max-width: 330px;
+      margin: 0 0 22px;
       font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .hero-side .degree {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--blue);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-link span {
+      font-size: 18px;
+      transition: transform 180ms ease;
+    }
+
+    .hero-link:hover span {
+      transform: translate(3px, 3px);
+    }
+
+    .intro-strip {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 40px;
+      padding-block: 34px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-label {
+      margin: 0;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      line-height: 1.8;
+      text-transform: uppercase;
+    }
+
+    .intro-strip p:last-child {
+      max-width: 690px;
+      margin: 0;
+      font-size: clamp(15px, 1.6vw, 19px);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1.75;
+    }
+
+    .work-section {
+      padding-block: 90px 104px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 30px;
+      margin-bottom: 38px;
+    }
+
+    .section-heading h2 {
+      margin: 12px 0 0;
+      font-size: clamp(2.1rem, 5vw, 4.5rem);
+      font-weight: 600;
+      letter-spacing: -0.075em;
+      line-height: 1;
+    }
+
+    .section-heading .note {
+      max-width: 260px;
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .work-group-title {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin: 0;
+      padding: 18px 0;
+      border-top: 1px solid var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .work-group-title span {
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .project-list {
+      margin-bottom: 62px;
+    }
+
+    .project {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.7fr) 36px;
+      gap: 28px;
+      align-items: center;
+      padding: 25px 0;
+      border-bottom: 1px solid var(--line);
+      transition: padding 180ms ease;
+    }
+
+    .project:hover {
+      padding-inline: 8px;
+    }
+
+    .project-type {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
       line-height: 1.7;
-      color: #666;
+      text-transform: uppercase;
+    }
+
+    .project-main h3 {
+      margin: 0 0 8px;
+      font-size: clamp(17px, 2.2vw, 25px);
+      font-weight: 600;
+      letter-spacing: -0.055em;
+      line-height: 1.25;
+    }
+
+    .project-main p {
+      max-width: 620px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .project-arrow {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--blue);
+      font-size: 17px;
+      transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .project:hover .project-arrow {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    .pending {
+      color: #85857f;
+    }
+
+    .pending .project-arrow {
+      color: #85857f;
+      border-style: dashed;
+    }
+
+    .about {
+      display: grid;
+      grid-template-columns: minmax(160px, 0.8fr) minmax(0, 1.7fr);
+      gap: 28px;
+      padding-block: 36px 88px;
+      border-top: 1px solid var(--ink);
+    }
+
+    .about-copy {
+      max-width: 690px;
+    }
+
+    .about-copy p {
+      margin: 0 0 18px;
+      font-size: 14px;
+      line-height: 1.95;
+    }
+
+    .about-copy .small-note {
+      color: var(--muted);
+      font-size: 11px;
     }
 
     footer {
-      position: absolute;
-      z-index: 3;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .footer-inner {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      padding: 24px 5vw 30px;
-      background: linear-gradient(
-        to bottom,
-        rgba(255,255,255,0),
-        #fff 90%
-      );
+      align-items: end;
+      gap: 30px;
+      padding-block: 34px;
+    }
+
+    .footer-name {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+    }
+
+    .footer-caption {
+      margin: 0;
+      color: #b8b8b3;
       font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: #666;
-      pointer-events: none;
+      line-height: 1.8;
     }
 
-    .colores {
-      display: flex;
-      gap: 6px;
-      margin-top: 12px;
+    .footer-link {
+      color: #9db8ff;
+      font-size: 11px;
+      font-weight: 600;
     }
 
-    .color {
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-    }
-
-    .rojo { background: #dc4245; }
-    .azul { background: #3f84cd; }
-    .amarillo { background: #f6c241; }
-    .verde { background: #4da67d; }
-
-    .reiniciar {
-      pointer-events: auto;
-      border: 1px solid #ddd;
-      background: white;
-      color: #333;
-      border-radius: 100px;
-      padding: 11px 16px;
-      font: inherit;
-      font-size: 10px;
-      cursor: pointer;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding: 22px 6vw;
+    @media (max-width: 760px) {
+      .page {
+        width: min(calc(100% - 40px), var(--page-width));
       }
 
-      main {
-        padding: 10vh 7vw 28vh;
+      .topbar {
+        min-height: 66px;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        gap: 38px;
+        padding-block: 78px 54px;
       }
 
       h1 {
-        font-size: clamp(48px, 14vw, 78px);
+        font-size: clamp(3.4rem, 15vw, 6rem);
       }
 
-      .descripcion {
-        max-width: 280px;
-        font-size: 13px;
+      .hero-side {
+        max-width: 440px;
       }
 
-      footer {
-        padding: 20px 6vw 24px;
+      .intro-strip,
+      .about {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .work-section {
+        padding-block: 66px 72px;
+      }
+
+      .section-heading {
+        align-items: start;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .project {
+        grid-template-columns: 1fr 30px;
+        gap: 8px 18px;
+        padding-block: 22px;
+      }
+
+      .project-type,
+      .project-main {
+        grid-column: 1;
+      }
+
+      .project-arrow {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        align-self: center;
+      }
+
+      .about {
+        padding-bottom: 64px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="pagina" id="pagina">
-    <canvas id="lluvia" aria-label="Octágonos de colores interactivos"></canvas>
+  <header class="page topbar">
+    <a class="wordmark" href="#inicio" aria-label="Volver al inicio">Florencia Pimentel</a>
+    <div class="topbar-meta">Portafolio académico · 2026</div>
+  </header>
 
-    <header>
-      <div class="marca">Proyecto de observación</div>
-      <div class="numero">Visualización / 001</div>
-    </header>
-
-    <main>
-      <div class="etiqueta">
-        <span class="punto"></span>
-        Levantamiento de información
-      </div>
-
-      <h1>
-        Tramas
-        <span>de elección.</span>
-      </h1>
-
-      <p class="descripcion">
-        Cada elección deja una huella. Las piezas se acumulan,
-        se encuentran y construyen una imagen colectiva del territorio.
-      </p>
-    </main>
-
-    <footer>
+  <main>
+    <section class="page hero" id="inicio">
       <div>
-        <div>Una construcción colectiva</div>
-        <div class="colores">
-          <span class="color rojo"></span>
-          <span class="color azul"></span>
-          <span class="color amarillo"></span>
-          <span class="color verde"></span>
-        </div>
+        <p class="eyebrow">EAD · PUCV · Diseño</p>
+        <h1>Hola, soy <span>Florencia<br>Pimentel.</span></h1>
       </div>
 
-      <button class="reiniciar" id="reiniciar" type="button">
-        ↻ Comenzar de nuevo
-      </button>
-    </footer>
-  </div>
-
-  <script>
-    const canvas = document.getElementById("lluvia");
-    const ctx = canvas.getContext("2d");
-    const pagina = document.getElementById("pagina");
-    const boton = document.getElementById("reiniciar");
-
-    const colores = [
-      "#dc4245",
-      "#3f84cd",
-      "#f6c241",
-      "#4da67d"
-    ];
-
-    const CANTIDAD = 220;
-    const GRAVEDAD = 0.22;
-    const piezas = [];
-
-    let ancho = 0;
-    let alto = 0;
-    let ultimoTiempo = 0;
-    let raf = 0;
-    let arrastrada = null;
-    let punteroAnterior = null;
-
-    const azar = (min, max) => Math.random() * (max - min) + min;
-    const limitar = (v, min, max) => Math.max(min, Math.min(max, v));
-
-    class Octagono {
-      constructor(x, y, tamano, color) {
-        this.x = x;
-        this.y = y;
-        this.t = tamano;
-        this.color = color;
-        this.vx = azar(-0.5, 0.5);
-        this.vy = azar(0.5, 2);
-        this.angulo = azar(0, Math.PI / 4);
-        this.giro = azar(-0.004, 0.004);
-        this.agarrada = false;
-        this.quieta = false;
-        this.apoyado = false;
-      }
-
-      dibujar() {
-        const radio = this.t / 2;
-
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angulo);
-        ctx.beginPath();
-
-        for (let i = 0; i < 8; i++) {
-          const a = (Math.PI * 2 * i / 8) - Math.PI / 8;
-          const px = Math.cos(a) * radio;
-          const py = Math.sin(a) * radio;
-
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-
-        ctx.closePath();
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.restore();
-      }
-
-      actualizar(dt) {
-        if (this.agarrada || this.quieta) return;
-
-        this.apoyado = false;
-        this.vy += GRAVEDAD * dt;
-        this.vy = Math.min(this.vy, 8);
-
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
-        this.angulo += this.giro * dt;
-
-        const r = this.t * 0.46;
-
-        if (this.x - r < 0) {
-          this.x = r;
-          this.vx = 0;
-        }
-
-        if (this.x + r > ancho) {
-          this.x = ancho - r;
-          this.vx = 0;
-        }
-
-        if (this.y + r >= alto) {
-          this.y = alto - r;
-          this.detener();
-        }
-      }
-
-      detener() {
-        this.vx = 0;
-        this.vy = 0;
-        this.giro = 0;
-        this.quieta = true;
-        this.apoyado = true;
-      }
-
-      reactivar() {
-        this.quieta = false;
-        this.apoyado = false;
-        this.vx = 0;
-        this.vy = 0;
-      }
-    }
-
-    function ajustarCanvas() {
-      const rect = pagina.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      ancho = rect.width;
-      alto = rect.height;
-
-      canvas.width = Math.round(ancho * dpr);
-      canvas.height = Math.round(alto * dpr);
-      canvas.style.width = ancho + "px";
-      canvas.style.height = alto + "px";
-
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function crearPiezas() {
-      piezas.length = 0;
-
-      for (let i = 0; i < CANTIDAD; i++) {
-        const t = azar(30, 52);
-
-        piezas.push(new Octagono(
-          azar(t / 2, Math.max(t / 2, ancho - t / 2)),
-          azar(-alto * 3, -30),
-          t,
-          colores[Math.floor(Math.random() * colores.length)]
-        ));
-      }
-    }
-
-    function resolverColisiones() {
-      // Repetir las comprobaciones para encontrar apoyos estables.
-      for (let pasada = 0; pasada < 3; pasada++) {
-        for (let i = 0; i < piezas.length; i++) {
-          const a = piezas[i];
-
-          for (let j = i + 1; j < piezas.length; j++) {
-            const b = piezas[j];
-
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
-            const distancia = Math.hypot(dx, dy);
-            const minimo = (a.t + b.t) * 0.43;
-
-            if (distancia === 0 || distancia >= minimo) continue;
-            if (a.quieta && b.quieta) continue;
-
-            const nx = dx / distancia;
-            const ny = dy / distancia;
-            const penetracion = minimo - distancia;
-
-            if (a.agarrada) {
-              b.reactivar();
-              b.x += nx * penetracion;
-              b.y += ny * penetracion;
-              b.vx += nx * 0.4;
-              b.vy += ny * 0.4;
-              continue;
-            }
-
-            if (b.agarrada) {
-              a.reactivar();
-              a.x -= nx * penetracion;
-              a.y -= ny * penetracion;
-              a.vx -= nx * 0.4;
-              a.vy -= ny * 0.4;
-              continue;
-            }
-
-            if (a.quieta) {
-              b.x += nx * penetracion;
-              b.y += ny * penetracion;
-            } else if (b.quieta) {
-              a.x -= nx * penetracion;
-              a.y -= ny * penetracion;
-            } else {
-              a.x -= nx * penetracion * 0.5;
-              a.y -= ny * penetracion * 0.5;
-              b.x += nx * penetracion * 0.5;
-              b.y += ny * penetracion * 0.5;
-            }
-
-            // Si una pieza llega sobre otra, la inmoviliza
-            // cuando su velocidad de caída ya es pequeña.
-            if (dy > 0 && Math.abs(dx) < minimo * 0.72) {
-              if (!a.quieta && a.vy >= b.vy) {
-                a.y = b.y - minimo;
-
-                if (a.vy < 2.2) {
-                  a.detener();
-                } else {
-                  a.vy = Math.min(a.vy, 1.5);
-                  a.vx *= 0.25;
-                }
-              }
-            } else if (dy < 0 && Math.abs(dx) < minimo * 0.72) {
-              if (!b.quieta && b.vy >= a.vy) {
-                b.y = a.y - minimo;
-
-                if (b.vy < 2.2) {
-                  b.detener();
-                } else {
-                  b.vy = Math.min(b.vy, 1.5);
-                  b.vx *= 0.25;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Suprimir cualquier movimiento residual.
-      for (const p of piezas) {
-        if (p.agarrada || p.quieta) continue;
-
-        const r = p.t * 0.46;
-
-        if (p.y + r >= alto - 0.5) {
-          p.y = alto - r;
-          p.detener();
-        }
-      }
-    }
-
-    function dibujar(tiempo) {
-      const dt = Math.min(
-        (tiempo - (ultimoTiempo || tiempo)) / 16.67,
-        1
-      );
-
-      ultimoTiempo = tiempo;
-      ctx.clearRect(0, 0, ancho, alto);
-
-      for (const pieza of piezas) {
-        pieza.actualizar(dt);
-      }
-
-      resolverColisiones();
-
-      for (const pieza of piezas) {
-        pieza.dibujar();
-      }
-
-      raf = requestAnimationFrame(dibujar);
-    }
-
-    function iniciar() {
-      cancelAnimationFrame(raf);
-      ultimoTiempo = 0;
-      arrastrada = null;
-      punteroAnterior = null;
-
-      ajustarCanvas();
-      crearPiezas();
-
-      raf = requestAnimationFrame(dibujar);
-    }
-
-    function posicion(evento) {
-      const rect = canvas.getBoundingClientRect();
-
-      return {
-        x: evento.clientX - rect.left,
-        y: evento.clientY - rect.top
-      };
-    }
-
-    canvas.addEventListener("pointerdown", evento => {
-      const p = posicion(evento);
-
-      for (let i = piezas.length - 1; i >= 0; i--) {
-        const pieza = piezas[i];
-        const distancia = Math.hypot(p.x - pieza.x, p.y - pieza.y);
-
-        if (distancia <= pieza.t * 0.65) {
-          arrastrada = pieza;
-          pieza.agarrada = true;
-          pieza.reactivar();
-          punteroAnterior = p;
-
-          piezas.splice(i, 1);
-          piezas.push(pieza);
-
-          canvas.setPointerCapture(evento.pointerId);
-          evento.preventDefault();
-          break;
-        }
-      }
-    });
-
-    canvas.addEventListener("pointermove", evento => {
-      if (!arrastrada || !punteroAnterior) return;
-
-      const p = posicion(evento);
-
-      arrastrada.vx = limitar(
-        (p.x - punteroAnterior.x) * 0.7, -14, 14
-      );
-
-      arrastrada.vy = limitar(
-        (p.y - punteroAnterior.y) * 0.7, -14, 14
-      );
-
-      arrastrada.x = p.x;
-      arrastrada.y = p.y;
-      punteroAnterior = p;
-    });
-
-    function soltar() {
-      if (!arrastrada) return;
-
-      arrastrada.agarrada = false;
-      arrastrada.quieta = false;
-      arrastrada.vx = limitar(arrastrada.vx, -14, 14);
-      arrastrada.vy = limitar(arrastrada.vy, -14, 14);
-
-      arrastrada = null;
-      punteroAnterior = null;
-    }
-
-    canvas.addEventListener("pointerup", soltar);
-    canvas.addEventListener("pointercancel", soltar);
-    boton.addEventListener("click", iniciar);
-
-    window.addEventListener("resize", () => {
-      ajustarCanvas();
-
-      for (const pieza of piezas) {
-        pieza.x = limitar(
-          pieza.x,
-          pieza.t / 2,
-          ancho - pieza.t / 2
-        );
-      }
-    });
-
-    iniciar();
-  </script>
+      <div class="hero-side">
+        <p>Estudiante de la Escuela de Arquitectura y Diseño de la Pontificia Universidad Católica de Valparaíso.</p>
+        <p class="degree">Cursando cuarto año, en la etapa previa al título.</p>
+        <a class="hero-link" href="#proyectos">Ver proyectos <span aria-hidden="true">↘</span></a>
+      </div>
+    </section>
+
+    <section class="page intro-strip" aria-label="Sobre este portafolio">
+      <p class="section-label">Una selección de trabajos</p>
+      <p>Proyectos y trabajos de diseño desarrollados durante mi formación. Un recorrido por encargos académicos, exploraciones de materialidad y experiencias digitales, desde el diseño hasta el código.</p>
+    </section>
+
+    <section class="page work-section" id="proyectos">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Selección de proyectos</p>
+          <h2>Trabajos</h2>
+        </div>
+        <p class="note">Procesos, ejercicios y resultados realizados durante mi formación en diseño.</p>
+      </div>
+
+      <div class="project-list">
+        <h3 class="work-group-title"><span>Web</span> Encargos del semestre</h3>
+
+        <a class="project" href="https://florenciapimentel.github.io/Presentacion-personal-/" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Desarrollo web</div>
+          <div class="project-main">
+            <h3>Presentación personal</h3>
+            <p>Un espacio digital para presentar mi perfil y explorar la construcción de una identidad a través del código.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <!-- Agrega aquí el enlace del segundo encargo cuando esté disponible. -->
+        <div class="project pending">
+          <div class="project-type">Desarrollo web</div>
+          <div class="project-main">
+            <h3>Segundo encargo</h3>
+            <p>Proyecto pendiente de incorporar.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </div>
+
+        <a class="project" href="https://flopimentelf.github.io/Pag-web-analisis/#zara" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Análisis visual · Web</div>
+          <div class="project-main">
+            <h3>Análisis de Zara</h3>
+            <p>Observación y análisis de una experiencia digital, atendiendo a sus recursos visuales y a la organización de la información.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="project" href="https://flopimentelf.github.io/Municipalidad-Poe-Rapanui/index.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Diseño web</div>
+          <div class="project-main">
+            <h3>Municipalidad Poʻe Rapa Nui</h3>
+            <p>Propuesta web vinculada a la comunicación institucional y la presentación de información.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <div class="project-list">
+        <h3 class="work-group-title"><span>EAD · PUCV</span> Proyectos de taller</h3>
+
+        <a class="project" href="https://wiki.ead.pucv.cl/Florencia_Pimentel#Atlas_Acr%C3%ADlico" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Materialidad · Investigación</div>
+          <div class="project-main">
+            <h3>Atlas Acrílico</h3>
+            <p>Exploración y registro de las cualidades del acrílico como material de diseño.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="project" href="https://wiki.ead.pucv.cl/Florencia_Pimentel#Atlas_Material" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Investigación material</div>
+          <div class="project-main">
+            <h3>Atlas Material</h3>
+            <p>Un ejercicio de observación, recopilación y organización de información sobre materiales.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="project" href="https://wiki.ead.pucv.cl/Florencia_Pimentel#FMD_2024_-_Proyecto_Mobiliario_/_Florencia_Pimentel" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Diseño de mobiliario · 2024</div>
+          <div class="project-main">
+            <h3>Proyecto Mobiliario</h3>
+            <p>Ejercicio de diseño y desarrollo de una propuesta de mobiliario en el marco de FMD 2024.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="project" href="https://wiki.ead.pucv.cl/Florencia_Pimentel#Matias_Arce,_Alonso_Hernandez,_Florencia_Pimentel._TPyT_S1_2026._Flujo_y_Asiento" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Taller de Personas y Territorios · 2026</div>
+          <div class="project-main">
+            <h3>Flujo y Asiento</h3>
+            <p>Proyecto colaborativo con Matías Arce y Alonso Hernández, centrado en la relación entre el flujo y la experiencia del espacio.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="project" href="https://wiki.ead.pucv.cl/Florencia_Pimentel#TPyT_S1_2026._Continuidad_estratificada_de_una_forma_envolvente" target="_blank" rel="noopener noreferrer">
+          <div class="project-type">Taller de Personas y Territorios · 2026</div>
+          <div class="project-main">
+            <h3>Continuidad estratificada de una forma envolvente</h3>
+            <p>Exploración formal a partir de la continuidad, las capas y la construcción de una forma envolvente.</p>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="page about" id="sobre-mi">
+      <p class="section-label">Sobre mí</p>
+      <div class="about-copy">
+        <p>Soy Florencia Pimentel, estudiante de cuarto año de la Escuela de Arquitectura y Diseño de la Pontificia Universidad Católica de Valparaíso, en la etapa previa al título.</p>
+        <p>Este sitio reúne parte de mi trabajo académico y mis exploraciones en diseño. Cada proyecto responde a una pregunta, un contexto y una manera de observar, investigar y dar forma a las ideas.</p>
+        <p class="small-note">Los proyectos enlazan a sus publicaciones originales o a sus versiones web.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="page footer-inner">
+      <div>
+        <p class="footer-name">Florencia Pimentel</p>
+        <p class="footer-caption">Escuela de Arquitectura y Diseño · PUCV<br>Portafolio académico · 2026</p>
+      </div>
+      <a class="footer-link" href="https://wiki.ead.pucv.cl/Florencia_Pimentel" target="_blank" rel="noopener noreferrer">Wiki EAD PUCV ↗</a>
+    </div>
+  </footer>
 </body>
 </html>
