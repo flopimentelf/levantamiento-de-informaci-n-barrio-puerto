@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -76,7 +75,7 @@ main{padding:35px 30px 30px}
 .side-label{padding:8px 2px;text-align:center;font-size:10px;font-weight:700;background:rgba(255,255,255,.55);border-bottom:1px solid rgba(0,0,0,.12)}
 .side-count{padding:5px 2px;text-align:center;font-size:9px;color:#666}
 .spheres{flex:1;min-height:250px;display:flex;flex-wrap:wrap-reverse;align-content:flex-start;align-items:flex-end;justify-content:center;gap:0;padding:5px 3px 8px;overflow:hidden}
-.sphere{position:relative;flex:0 0 39px;width:39px;height:39px;margin:0 -4px -4px;clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.84;mix-blend-mode:multiply;border:none;transform:rotate(var(--giro,0deg))}
+.sphere{position:relative;flex:0 0 43px;width:43px;height:43px;margin:0 -8px -7px;clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.88;mix-blend-mode:multiply;border:none;transform:rotate(var(--giro,0deg))}
 .sphere.blue{background:rgba(8,117,255,.84)}
 .sphere.green{background:rgba(0,145,82,.84)}
 .sphere.yellow{background:rgba(255,208,0,.88)}
@@ -410,15 +409,15 @@ const container=document.getElementById("rain");
 if(!container||container.dataset.rainStarted==="true"||!window.Matter)return;
 container.dataset.rainStarted="true";
 const {Engine,Render,Runner,Bodies,Body,Composite,Events}=Matter;
-const colors=["rgba(255,25,60,.62)","rgba(0,100,255,.60)","rgba(255,195,0,.66)","rgba(0,210,120,.60)"];
+const colors=["rgba(255,25,60,.68)","rgba(0,100,255,.66)","rgba(255,195,0,.72)","rgba(0,210,120,.66)"];
 let width=Math.max(1,container.clientWidth);
 let height=Math.max(1,container.clientHeight);
 let pieces=[];
 let walls=[];
 let lastSpawn=performance.now();
 let colorIndex=0;
-const size=40;
-const maxPieces=204;
+const size=46;
+const maxPieces=300;
 const engine=Engine.create({enableSleeping:true});
 engine.gravity.y=1;
 engine.gravity.scale=.001;
@@ -439,11 +438,12 @@ Composite.add(engine.world,walls);
 }
 function makePiece(){
 if(pieces.length>=maxPieces)return;
-const radius=width<500?Math.max(29,Math.min(38,width*.082)):35;
+const radius=width<500?Math.max(32,Math.min(42,width*.09)):39;
 const x=random(radius,Math.max(radius+1,width-radius));
 const piece=Bodies.polygon(x,-80-random(0,height*.2),5,radius,{
 restitution:.005,friction:.92,frictionStatic:1,frictionAir:.018,density:.0018,slop:.01,sleepThreshold:35,angle:random(-.5,.5),render:{visible:false}
 });
+piece.displayRadius=radius*1.1;
 piece.pentagonColor=colors[colorIndex++%colors.length];
 Body.setVelocity(piece,{x:random(-.65,.65),y:random(0,.3)});
 Body.setAngularVelocity(piece,random(-.012,.012));
@@ -451,7 +451,7 @@ pieces.push(piece);
 Composite.add(engine.world,piece);
 }
 function drawPiece(ctx,piece){
-const radius=piece.circleRadius||35;
+const radius=piece.displayRadius||((piece.circleRadius||39)*1.1);
 ctx.save();
 ctx.translate(piece.position.x,piece.position.y);
 ctx.rotate(piece.angle);
@@ -476,7 +476,7 @@ ctx.restore();
 });
 Events.on(engine,"beforeUpdate",()=>{
 const now=performance.now();
-if(now-lastSpawn>135&&pieces.length<maxPieces){makePiece();lastSpawn=now;}
+if(now-lastSpawn>80&&pieces.length<maxPieces){makePiece();lastSpawn=now;}
 pieces.forEach(piece=>{
 if(piece.isSleeping)return;
 if(piece.speed<.045&&Math.abs(piece.angularVelocity)<.01){Body.setVelocity(piece,{x:0,y:0});Body.setAngularVelocity(piece,0);}
@@ -500,7 +500,7 @@ render.options.height=height;
 makeWalls();
 }
 makeWalls();
-for(let i=0;i<24;i++)makePiece();
+for(let i=0;i<36;i++)makePiece();
 window.addEventListener("resize",resizeRain);
 if("ResizeObserver" in window){new ResizeObserver(resizeRain).observe(container);}
 Runner.run(runner,engine);
