@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -26,8 +25,9 @@ button{cursor:pointer}
 .hero-note{margin-top:24px;color:#555;font-size:10px;line-height:1.7}
 .hero-footer{padding-top:13px;border-top:1px solid var(--linea);font-size:9px;text-transform:uppercase;letter-spacing:.04em}
 .hero-divider{position:absolute;z-index:3;top:0;bottom:0;left:50%;width:1px;background:rgba(23,23,23,.45)}
-#rain{position:absolute;inset:0 0 0 50%;overflow:hidden;pointer-events:none}
-#rain canvas{display:block;mix-blend-mode:multiply}
+#rain{position:absolute;inset:0 0 0 50%;overflow:hidden;pointer-events:none;z-index:1}
+#rain .rain-piece{position:absolute;top:-45px;display:block;width:var(--size);height:var(--size);background:var(--color);clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.84;animation:rainFall var(--duration) linear var(--delay) infinite;will-change:transform}
+@keyframes rainFall{0%{transform:translate3d(0,-50px,0) rotate(0deg)}100%{transform:translate3d(var(--drift),110vh,0) rotate(var(--rotation))}}
 main{padding:35px 30px 30px}
 .section-top{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;padding-bottom:22px;border-bottom:1px solid var(--linea)}
 .section-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--azul)}
@@ -408,84 +408,29 @@ supabaseClient.channel("registros-cambios")
 init();
 function startRain(){
 const container=document.getElementById("rain");
-if(!container||!window.Matter)return;
-if(container.dataset.rainStarted==="true")return;
-const {Engine,Render,Runner,Bodies,Composite,Events}=Matter;
-const colors=["#0875ff","#00c878","#ffd000","#ed382b"];
-function initialize(){
-const width=container.clientWidth;
-const height=container.clientHeight;
-if(width<1||height<1){
-requestAnimationFrame(initialize);
-return;
-}
+if(!container||container.dataset.rainStarted==="true")return;
 container.dataset.rainStarted="true";
-const engine=Engine.create();
-engine.gravity.y=.7;
-const pixelRatio=Math.min(window.devicePixelRatio||1,2);
-const render=Render.create({element:container,engine,options:{width,height,wireframes:false,background:"transparent",pixelRatio}});
-const runner=Runner.create();
-let walls=[];
-function updateWalls(){
-if(walls.length)Composite.remove(engine,walls);
-const w=container.clientWidth;
-const h=container.clientHeight;
-walls=[
-Bodies.rectangle(w/2,h+25,w+100,50,{isStatic:true,render:{visible:false}}),
-Bodies.rectangle(w+25,h/2,50,h+100,{isStatic:true,render:{visible:false}}),
-Bodies.rectangle(-25,h/2,50,h+100,{isStatic:true,render:{visible:false}})
-];
-Composite.add(engine,walls);
+const colors=["#0875ff","#00c878","#ffd000","#ed382b"];
+const fragment=document.createDocumentFragment();
+for(let i=0;i<32;i++){
+const piece=document.createElement("span");
+piece.className="rain-piece";
+piece.style.left=Math.random()*100+"%";
+piece.style.setProperty("--size",13+Math.random()*19+"px");
+piece.style.setProperty("--color",colors[Math.floor(Math.random()*colors.length)]);
+piece.style.setProperty("--duration",4+Math.random()*7+"s");
+piece.style.setProperty("--delay",-Math.random()*11+"s");
+piece.style.setProperty("--drift",(Math.random()*140-70)+"px");
+piece.style.setProperty("--rotation",(Math.random()*720-360)+"deg");
+fragment.appendChild(piece);
 }
-function addPentagon(initial=false){
-const w=container.clientWidth;
-const h=container.clientHeight;
-const radius=13+Math.random()*18;
-const x=radius+Math.random()*Math.max(1,w-radius*2);
-const y=initial?Math.random()*h-h:-radius*2;
-const body=Bodies.polygon(x,y,5,radius,{restitution:.35,friction:.4,density:.001,angle:Math.random()*Math.PI,render:{fillStyle:colors[Math.floor(Math.random()*colors.length)],opacity:.85}});
-Composite.add(engine,body);
+container.appendChild(fragment);
 }
-updateWalls();
-for(let i=0;i<24;i++)addPentagon(true);
-Events.on(engine,"afterUpdate",()=>{
-Composite.allBodies(engine).forEach(body=>{
-if(!body.isStatic&&body.position.y>container.clientHeight+70){
-Composite.remove(engine,body);
-addPentagon();
-}
-});
-});
-Render.run(render);
-Runner.run(runner,engine);
-let resizeFrame=0;
-function resizeRain(){
-cancelAnimationFrame(resizeFrame);
-resizeFrame=requestAnimationFrame(()=>{
-const w=container.clientWidth;
-const h=container.clientHeight;
-if(w<1||h<1)return;
-render.canvas.width=w*pixelRatio;
-render.canvas.height=h*pixelRatio;
-render.canvas.style.width=w+"px";
-render.canvas.style.height=h+"px";
-render.options.width=w;
-render.options.height=h;
-render.bounds.max.x=w;
-render.bounds.max.y=h;
-updateWalls();
-});
-}
-if("ResizeObserver" in window){
-const observer=new ResizeObserver(resizeRain);
-observer.observe(container);
+if(document.readyState==="loading"){
+document.addEventListener("DOMContentLoaded",startRain,{once:true});
 }else{
-window.addEventListener("resize",resizeRain);
-}
-}
-requestAnimationFrame(initialize);
-}
 startRain();
+}
 </script>
 </body>
 </html>
