@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tramas de elección | Taller de Diseño de Servicios 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
 <style>
 :root{--azul:#0875ff;--verde:#00c878;--amarillo:#ffd000;--rojo:#ed382b;--negro:#171717;--linea:rgba(23,23,23,.3)}
 *{box-sizing:border-box}
@@ -26,8 +25,8 @@ button{cursor:pointer}
 .hero-footer{padding-top:13px;border-top:1px solid var(--linea);font-size:9px;text-transform:uppercase;letter-spacing:.04em}
 .hero-divider{position:absolute;z-index:3;top:0;bottom:0;left:50%;width:1px;background:rgba(23,23,23,.45)}
 #rain{position:absolute;inset:0 0 0 50%;overflow:hidden;pointer-events:none;z-index:1}
-#rain .rain-piece{position:absolute;top:-45px;display:block;width:var(--size);height:var(--size);background:var(--color);clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.84;animation:rainFall var(--duration) linear var(--delay) infinite;will-change:transform}
-@keyframes rainFall{0%{transform:translate3d(0,-50px,0) rotate(0deg)}100%{transform:translate3d(var(--drift),110vh,0) rotate(var(--rotation))}}
+#rain .rain-piece{position:absolute;display:block;background:var(--color);clip-path:polygon(50% 0%,98% 35%,80% 94%,20% 94%,2% 35%);opacity:.9;transform:translateY(var(--fall-distance)) rotate(0deg);animation:rainSettle var(--duration) cubic-bezier(.2,.7,.3,1) var(--delay) forwards;will-change:transform}
+@keyframes rainSettle{0%{transform:translateY(var(--fall-distance)) rotate(0deg)}72%{transform:translateY(5px) rotate(var(--rotation))}86%{transform:translateY(-2px) rotate(calc(var(--rotation)*.65))}100%{transform:translateY(0) rotate(var(--rotation))}}
 main{padding:35px 30px 30px}
 .section-top{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;padding-bottom:22px;border-bottom:1px solid var(--linea)}
 .section-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--azul)}
@@ -92,7 +91,7 @@ main{padding:35px 30px 30px}
 .board-note{font-size:10px;line-height:1.7;color:#444}
 footer{display:flex;justify-content:space-between;gap:15px;padding:20px 30px;border-top:1px solid var(--linea);font-size:9px;text-transform:uppercase;letter-spacing:.04em}
 @media(max-width:900px){.controls{grid-template-columns:repeat(3,minmax(0,1fr))}.research-info{grid-template-columns:1fr}.section-top{align-items:flex-start;flex-direction:column}}
-@media(max-width:600px){.hero{grid-template-columns:1fr;min-height:760px}.hero-copy{padding:20px}.hero-divider{left:0;right:0;top:50%;bottom:auto;width:auto;height:1px}#rain{inset:50% 0 0}.hero h1{font-size:clamp(48px,14vw,78px)}main{padding:28px 14px}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.board-wrap{overflow-x:auto}.board{min-width:680px}.board-bottom{min-width:680px}.section-top h2{font-size:36px}.board-bottom{grid-template-columns:1fr}.hero-header{font-size:9px}footer{padding:18px 14px;flex-direction:column}.login-panel{align-items:stretch;flex-direction:column}.login-panel .field{width:100%}}
+@media(max-width:600px){.hero{grid-template-columns:1fr;min-height:760px;min-height:90svh}.hero-copy{padding:20px 18px;min-width:0}.hero-divider{left:0;right:0;top:50%;bottom:auto;width:auto;height:1px}#rain{inset:50% 0 0}.hero-header{font-size:9px;flex-direction:column;gap:8px}.hero-meta{text-align:left}.hero-content{padding:30px 0;min-width:0}.hero h1{font-size:clamp(40px,11vw,62px)}.hero-description{max-width:100%;font-size:12px;line-height:1.55;margin-top:18px;overflow-wrap:break-word}.hero-note{font-size:10px;margin-top:18px}.hero-footer{font-size:8px}main{padding:28px 14px}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.board-wrap{overflow-x:auto}.board{min-width:680px}.board-bottom{min-width:680px;grid-template-columns:1fr}.section-top h2{font-size:36px}.board-bottom{gap:15px;padding:12px 5px}.hero-header{font-size:9px}footer{padding:18px 14px;flex-direction:column}.login-panel{align-items:stretch;flex-direction:column}.login-panel .field{width:100%}}
 </style>
 </head>
 <body>
@@ -230,7 +229,7 @@ let registros=[];
 let currentUser=null;
 let busy=false;
 const $=id=>document.getElementById(id);
-const today=()=>new Date().toLocaleDateString("en-CA");
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
 $("fecha").value=today();
 function setStatus(message){$("loginStatus").textContent=message}
 function setSync(message){$("syncStatus").textContent=message}
@@ -387,8 +386,8 @@ $("loginButton").addEventListener("click",login);
 $("logoutButton").addEventListener("click",logout);
 $("addButton").addEventListener("click",addRecords);
 $("undoButton").addEventListener("click",undoLast);
-$("resetButton").addEventListener("click",resetDay);
 $("exportButton").addEventListener("click",exportCSV);
+$("resetButton").addEventListener("click",resetDay);
 $("fecha").addEventListener("change",renderBoard);
 $("lugar").addEventListener("change",renderBoard);
 supabaseClient.auth.onAuthStateChange((_event,session)=>{
@@ -396,7 +395,6 @@ currentUser=session?.user||null;
 updateAccess();
 });
 async function init(){
-if(SUPABASE_URL==="PEGA_AQUI_TU_PROJECT_URL"){setSync("Falta configurar la URL de Supabase.");return}
 const {data:{session}}=await supabaseClient.auth.getSession();
 currentUser=session?.user||null;
 updateAccess();
@@ -411,20 +409,32 @@ const container=document.getElementById("rain");
 if(!container||container.dataset.rainStarted==="true")return;
 container.dataset.rainStarted="true";
 const colors=["#0875ff","#00c878","#ffd000","#ed382b"];
-const fragment=document.createDocumentFragment();
-for(let i=0;i<32;i++){
+const width=container.clientWidth;
+const height=container.clientHeight;
+if(!width||!height)return;
+const baseSize=Math.max(25,Math.min(39,width/12));
+const columnWidth=baseSize*.78;
+const columns=Math.max(1,Math.ceil(width/columnWidth));
+const total=Math.max(160,Math.ceil(height/(baseSize*.48))*columns);
+for(let i=0;i<total;i++){
 const piece=document.createElement("span");
+const size=baseSize*(.78+Math.random()*.5);
+const col=i%columns;
+const row=Math.floor(i/columns);
+const left=Math.max(-size*.2,Math.min(width-size*.8,col*(width/columns)+(Math.random()-.5)*columnWidth));
+const top=height-size-row*baseSize*.43+(Math.random()-.5)*baseSize*.32;
 piece.className="rain-piece";
-piece.style.left=Math.random()*100+"%";
-piece.style.setProperty("--size",13+Math.random()*19+"px");
+piece.style.left=left+"px";
+piece.style.top=top+"px";
+piece.style.width=size+"px";
+piece.style.height=size+"px";
 piece.style.setProperty("--color",colors[Math.floor(Math.random()*colors.length)]);
-piece.style.setProperty("--duration",4+Math.random()*7+"s");
-piece.style.setProperty("--delay",-Math.random()*11+"s");
-piece.style.setProperty("--drift",(Math.random()*140-70)+"px");
-piece.style.setProperty("--rotation",(Math.random()*720-360)+"deg");
-fragment.appendChild(piece);
+piece.style.setProperty("--fall-distance",-(height+size+top)+"px");
+piece.style.setProperty("--duration",(1.05+Math.random()*.85)+"s");
+piece.style.setProperty("--delay",(i*.065)+"s");
+piece.style.setProperty("--rotation",(Math.random()*90-45)+"deg");
+container.appendChild(piece);
 }
-container.appendChild(fragment);
 }
 if(document.readyState==="loading"){
 document.addEventListener("DOMContentLoaded",startRain,{once:true});
